@@ -9,7 +9,8 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <div> 
+      <div className="home-bg-image bg-image"></div>
       <div className="container">
         <section className="intro-section">
           <h1>
@@ -39,6 +40,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

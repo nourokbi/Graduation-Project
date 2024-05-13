@@ -15,9 +15,13 @@ export default function Header() {
   const toggleNavbar = () => {
     navRef.current.classList.toggle("nav-opened")
   }
+  const closeNavbar = () => {
+    navRef.current.classList.remove("nav-opened")
+   }
+
 
   return (
-    <div className="wrapper-container" style={innerContainerStyles}>
+    <div className="nav-container" style={innerContainerStyles}>
       <div className="container">
         <header>
           <Link className="site-logo" to="/">
@@ -58,26 +62,38 @@ export default function Header() {
             <NavLink
               to="/"
               style={({ isActive }) => (isActive ? activeStyles : null)}
+              onClick={closeNavbar}
             >
               Home
             </NavLink>
             <NavLink
               to="/analyze"
               style={({ isActive }) => (isActive ? activeStyles : null)}
+              onClick={closeNavbar}
             >
               Analyze
             </NavLink>
             <NavLink
               to="/dashboard"
               style={({ isActive }) => (isActive ? activeStyles : null)}
+              onClick={closeNavbar}
             >
               Dashboard
             </NavLink>
             <NavLink
               to="/about"
               style={({ isActive }) => (isActive ? activeStyles : null)}
+              onClick={closeNavbar}
             >
               About
+            </NavLink>
+            <NavLink
+              to="/login"
+              // style={({ isActive }) => (isActive ? activeStyles : null)}
+              onClick={closeNavbar}
+              className={"nav-login"}
+            >
+              Login
             </NavLink>
             <button onClick={toggleNavbar} className="nav-btn nav-close-btn">
               <FaTimes />
