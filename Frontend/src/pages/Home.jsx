@@ -22,9 +22,6 @@ export default function Home() {
             The solution for weather Decision-makers <br /> and Analysts
           </p>
         </section>
-        <div>
-          <Modal header={<div>Hello Modal</div>} body={<Btn/>} footer={<Btn/>} />
-        </div>
         <section className="analyze-section">
           <div className="analyze-info">
             <h2>Region selection and Weather indicies</h2>
