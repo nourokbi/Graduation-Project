@@ -145,7 +145,7 @@ export default function AnalyzeForm() {
             </div>
             <div className="column">
               <div className="column-item full-width">
-                <button type="submit" disabled={isSubmitting}>
+                <button type="submit" className="green-analyze-btn" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <Puff
                       visible={true}

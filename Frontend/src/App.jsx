@@ -6,13 +6,12 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Analyze from "./pages/Analyze/Analyze";
 import DashboardLayout from "./components/DashboardLayout";
-import Datasets from "./pages/Dashboard/Datasets";
+import Datasets from "./pages/Dashboard/Datasets/Datasets";
 import Indices from "./pages/Dashboard/Indices";
-import Roles from "./pages/Dashboard/Roles";
 import Signup from "./pages/Dashboard/Signup";
 import AuthRequired from "./components/AuthRequired";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Dashboard/Login";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -27,7 +26,6 @@ function App() {
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<Datasets />} />
               <Route path="indices" element={<Indices />} />
-              <Route path="roles" element={<Roles />} />
               <Route path="signup" element={<Signup />} />
             </Route>
           </Route>

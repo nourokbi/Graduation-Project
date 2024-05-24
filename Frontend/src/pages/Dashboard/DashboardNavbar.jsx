@@ -24,16 +24,10 @@ export default function DashboardNavbar() {
           Indices
         </NavLink>
         <NavLink
-          to="roles"
-          style={({ isActive }) => (isActive ? activeStyles : null)}
-        >
-          Roles
-        </NavLink>
-        <NavLink
           to="signup"
           style={({ isActive }) => (isActive ? activeStyles : null)}
         >
-          Analyst Signup
+          Analyst Requests
         </NavLink>
       </nav>
     </div>

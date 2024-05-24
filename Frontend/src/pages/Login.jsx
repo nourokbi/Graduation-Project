@@ -79,7 +79,7 @@ export default function Login() {
                 </div>
                 <button
                   type="submit"
-                  className="login-btn"
+                  className="login-btn green-analyze-btn"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

@@ -37,17 +37,10 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: 200px;
   padding: 1rem;
-  border-radius: 10px;
-  background-color: var(--acent-color);
-  color: white;
   border: none;
-  font-size: 1.2rem;
   cursor: pointer;
-}
-button:hover {
-  background-color: var(--hover-color);
+  font-size: 1.2rem;
 }
 button:disabled {
   background-color: #cccccc;
@@ -75,6 +68,60 @@ button:disabled {
   left: 0;
   bottom: -50px;
   padding: 10px 0;
+}
+.green-analyze-btn {
+  width: 200px;
+  border-radius: 10px;
+  background-color: var(--acent-color);
+  color: white;
+}
+.green-analyze-btn:hover {
+  background-color: var(--hover-color);
+}
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 5rem;
+}
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: max(300px, 50%);
+  background-color: white;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 10px;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-header button {
+  padding: 5px;
+}
+.modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.modal button{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+
 }
 .bg-image{
   width: 100%;
@@ -156,38 +203,36 @@ header .nav-login:hover {
     opacity: 1;
   }
   header nav {
-    background-color: #161616;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 1.5rem;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    background-color: #161616;
     transition: 1s;
     transform: translateX(100%);
+    z-index: 5;
   }
-    header nav a {
+  header nav a {
     color: white;
-    }
-    header .nav-opened {
-      transform: none;
-    }
-    header .nav-close-btn {
-      position: absolute;
-      top: 10px;
-      right: 25px;
-    }
+  }
+  header .nav-opened {
+    transform: none;
+  }
+  header .nav-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+  }
 }
 
 /* Section Styles */
 /* Landing page */
-.home-bg-image {
-  
-}
 .intro-section {
   padding: var(--section-padding);
   margin-bottom: var(--section-margin);
@@ -347,8 +392,8 @@ header .nav-login:hover {
 
 /* Dashboard Page */
 .dashboard-container {
+  position: relative;
   display: flex;
-  align-items: start;
   flex-direction: column;
   gap: 30px;
 }
@@ -367,13 +412,141 @@ header .nav-login:hover {
 .dashboard-container .dash-nav a:hover {
   text-decoration: underline;
 }
+/* Dataset */
+.dataset-container {
+  width: 100%;
+  padding: 0 1.25rem;
+}
+.dataset-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.btn {
+  font-size: 1rem;
+  padding: 5px;
+
+}
+.dataset-head h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.dataset-head p {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.upload-form button{
+  background-color: var(--acent-color);
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.upload-form button:hover {
+  background-color: var(--hover-color);
+}
+.table-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 75px;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.table-row:nth-child(1):hover {
+  background-color: white !important;
+}
+
+.table-row:nth-child(even) {
+  background-color: #f3f3f3;
+}
+
+.table-row:nth-child(odd):hover {
+  background-color: #f3f3f3f3;
+}
+
+.table-row.header {
+  font-weight: bold;
+  border: none;
+  box-shadow: none;
+}
+.table-row .table-cell button {
+  border-radius: 7px;
+  padding: 5px;
+  transition: background-color 0.3s ease;
+}
+.table-row .table-cell button:hover {
+  background-color: #c9c9c9;
+}
+.table-row .table-cell .edit-btn {
+  background-color: #3FA34D;
+  color: white;
+  /* color: #3FA34D; */
+}
+.table-row .table-cell .delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+.table-row .table-cell:last-child {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Upload Form */
+.upload-form textarea {
+  padding: 10px;
+  width: 100%;
+  min-height: 175px;
+  border: 2px solid #3FA34D;
+  border-radius: 10px;
+}
+.upload-form p  {
+  color: #ffcc00;
+  font-size: 1.1rem;
+}
+.upload-form p span {
+  /* display: none; */
+  color: black;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+/* Delete Modal  */
+.delete-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 50px;
+}
+.delete-modal h2 {
+  text-align: center;
+}
+.delete-modal button {
+  /* background-color: #f44336; */
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.delete-modal button:hover {
+  background-color: #d32f2f;
+}
+.delete-modal .delete-modal-btn {
+  background-color: #f44336;
+}
+.delete-modal .cancel-modal-btn {
+  background-color: #3FA34D;
+}
+.delete-modal .cancel-modal-btn:hover {
+  background-color: #1b6d26;
+}
+
 /* About */
 /* Learn */
 
 /* Login */
-.login-container {
-  
-}
 .login-bg {
   background-image: url("./assets/blob-scene-haikei.svg");
 }
@@ -404,6 +577,7 @@ header .nav-login:hover {
 }
 .password-field {
   position: relative;
+  z-index: 0;
 }
 .show-password-button {
   width: 50px;
