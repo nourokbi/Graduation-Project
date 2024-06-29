@@ -1,6 +1,4 @@
-import Btn from "../components/Btn";
-import Map from "../components/Map";
-import { Modal } from "../components/Modal";
+import Map from "../components/ui/Map";
 
 export default function Home() {
   const zoom = 4;
@@ -32,7 +30,10 @@ export default function Home() {
               Our solution is designed to help you make better decisions and
               improve your weather analysis process
             </p>
-            <button className="analyze-btn green-analyze-btn" onClick={handleClick}>
+            <button
+              className="analyze-btn green-analyze-btn"
+              onClick={handleClick}
+            >
               Start Analyze
             </button>
           </div>

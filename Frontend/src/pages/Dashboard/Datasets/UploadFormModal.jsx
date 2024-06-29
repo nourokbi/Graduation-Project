@@ -1,156 +1,181 @@
-import ModalForm from "../ModalForm";
+import { useFormik } from "formik";
+import { FormModal } from "../../../components/Modals/FormModal";
+import {
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  Textarea,
+  useDisclosure,
+} from "@nextui-org/react";
 import * as Yup from "yup";
-import { ErrorMessage, Field } from "formik";
 import { FileUp } from "lucide-react";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import ListItemText from "@mui/material/ListItemText";
-import Select from "@mui/material/Select";
-import Checkbox from "@mui/material/Checkbox";
-import { useState } from "react";
-
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
 
 export default function UploadFormModal() {
-  const [personName, setPersonName] = useState([]);
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
+  const { onOpen, isOpen, onClose, onOpenChange } = useDisclosure();
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Required"),
-    type: Yup.string().required("Required"),
-    vname: Yup.array()
-      .of(Yup.string().required())
-      .min(1, "At least one variable must be selected"),
+    datasetName: Yup.string().required("Required"),
+    datasetType: Yup.string().required("Required"),
+    variableName: Yup.array()
+      .of(Yup.string().required("Required"))
+      .min(1, "Select at least one variable"),
+    description: Yup.string(),
     file: Yup.mixed()
       .required("Required")
-      .test("fileType", "Only .nc files are allowed", (value) => {
-        // Check if a file is selected and it has a .nc extension
-        return value && value.name && value.name.endsWith(".nc");
+      .test("fileFormat", "Unsupported Format", (value) => {
+        return value && value.name.endsWith(".nc");
       }),
   });
 
-  const initialValues = {
-    name: "",
-    type: "",
-    vname: "",
-    description: "",
-    file: null,
-  };
+  const formik = useFormik({
+    initialValues: {
+      datasetName: "",
+      datasetType: "",
+      variableName: [],
+      description: "",
+      file: null,
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
 
-  const onSubmit = (values) => {
-    //! Send the form data to the backend
-    console.log(values);
-  };
-  const buttonText = (
-    <>
-      <FileUp /> Upload
-    </>
-  );
+  const buttonText = <>
+    <FileUp size={20} /> Upload
+  </>
 
   return (
-    <ModalForm
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
+    <FormModal
+      //! Edit Form fields => Dataset name, type, varName, description
+      //! Delete Form fields => Delete
+      onOpen={onOpen}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      header={"Upload Dataset"}
       buttonText={buttonText}
-      formStyle="upload-form"
+      buttonStyle={"upload-form-btn upload-btn"}
     >
-      <>
-        <h1 className="column">Upload Dataset</h1>
-        <p className="upload-note">
-          <span>Note: </span>Uploaded dataset must contain min, max and mean
-          column for weather
-        </p>
-        <div className="column">
-          <div className="column-item">
-            <label htmlFor="name">Name*</label>
-            <Field
-              type="text"
-              name="name"
-              id="name"
+      <form onSubmit={formik.handleSubmit} className="upload-form">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="col-span-1">
+            <Input
+              label="Dataset Name*"
               placeholder="Enter dataset name..."
+              name="datasetName"
+              errorMessage={formik.errors.datasetName}
+              value={formik.values.datasetName}
+              onChange={formik.handleChange}
+              labelPlacement="outside"
             />
-            <ErrorMessage name="name" component="div" className="error" />
+            {formik.errors.datasetName && formik.touched.datasetName && (
+              <div className="text-red-500">{formik.errors.datasetName}</div>
+            )}
           </div>
-          <div className="column-item">
-            <label htmlFor="file">File*</label>
-            <Field type="file" name="file" id="file" accept=".nc" />
-            <ErrorMessage name="file" component="div" className="error" />
+          <div className="col-span-1">
+            <Select
+              labelPlacement={"outside"}
+              label="Dataset Type*"
+              errorMessage={formik.errors.datasetType}
+              placeholder="Select dataset type..."
+              className="w-full"
+              name="datasetType"
+              value={formik.values.datasetType}
+              onChange={formik.handleChange}
+            >
+              <SelectItem value={"TMP"}>Temprature</SelectItem>
+              <SelectItem value={"PR"}>Percitipation</SelectItem>
+              <SelectItem value={"HCW"}>Heat & Cold Waves</SelectItem>
+            </Select>
+            {formik.errors.datasetType && formik.touched.datasetType && (
+              <div className="text-red-500">{formik.errors.datasetType}</div>
+            )}
+          </div>
+          <div className="col-span-full">
+            <Select
+              labelPlacement={"outside"}
+              label="Variable Name*"
+              selectionMode="multiple"
+              errorMessage={formik.errors.variableName}
+              placeholder="Select variable name..."
+              className="w-full"
+              name="variableName"
+              value={formik.values.variableName}
+              onChange={formik.handleChange}
+            >
+              <SelectItem value={"max"}>Max Temprature</SelectItem>
+              <SelectItem value={"min"}>Min Temprature</SelectItem>
+              <SelectItem value={"minmax"}>Min & Max Temprature</SelectItem>
+              <SelectItem value={"pr"}>Percitipation</SelectItem>
+              <SelectItem value={"waves"}>Waves</SelectItem>
+            </Select>
+            {formik.errors.variableName && formik.touched.variableName && (
+              <div className="text-red-500">{formik.errors.variableName}</div>
+            )}
           </div>
         </div>
-        <div className="column">
-          <div className="column-item">
-            <label htmlFor="type">Type*</label>
-            <Field type="text" name="type" id="type" as="select">
-              <option value="" default>
-                Select dataset type...
-              </option>
-              <option value="TMP">Temprature</option>
-              <option value="PR">Percitipation</option>
-              <option value="HCW">Heat and Cold Waves</option>
-            </Field>
-            <ErrorMessage name="type" component="div" className="error" />
-          </div>
-          <div className="column-item">
-            <label htmlFor="vname">Variable Name*</label>
-            {/* //! Add a select dropdown for variable names */}
-            <FormControl sx={{}}>
-              <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel>
-              <Select
-                labelId="demo-multiple-checkbox-label"
-                id="demo-multiple-checkbox"
-                multiple
-                value={personName}
-                onChange={handleChange}
-                input={<OutlinedInput label="Tag" />}
-                renderValue={(selected) => selected.join(", ")}
+        <div className="mt-4">
+          <Textarea
+            label="Description (optional)"
+            placeholder="Enter dataset description..."
+            name="description"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            labelPlacement="outside"
+          />
+        </div>
+        {/* File input */}
+        <div className="col-span-full mt-4">
+          <label
+            htmlFor="cover-photo"
+            className="block text-sm font-medium leading-6 text-gray-900 font-semibold"
+          >
+            Upload nc File*
+          </label>
+          <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-3">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-300"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
               >
-                {names.map((name) => (
-                  <MenuItem key={name} value={name}>
-                    <Checkbox checked={personName.indexOf(name) > -1} />
-                    <ListItemText primary={name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <path d="M6 2C4.895 2 4 2.895 4 4V20C4 21.105 4.895 22 6 22H18C19.105 22 20 21.105 20 20V8L14 2H6zM14 4L18 8H14V4zM8 12H16V14H8V12zM8 16H16V18H8V16z" />
+              </svg>
 
-            <ErrorMessage name="vname" component="div" className="error" />
+              <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                <label
+                  htmlFor="file-upload"
+                  className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                >
+                  <span>Upload .nc file*</span>
+                  <input
+                    id="file-upload"
+                    name="file"
+                    type="file"
+                    accept=".nc"
+                    className="sr-only"
+                    value={formik.values.file}
+                    onChange={formik.handleChange}
+                  />
+                  {formik.errors.file && (
+                    <div className="text-red-500"> {formik.errors.file}</div>
+                  )}
+                </label>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="column">
-          <div className="column-item full-width">
-            <label htmlFor="description">Description</label>
-            <Field as="textarea" name="description" id="description" />
-            <ErrorMessage
-              name="description"
-              component="div"
-              className="error"
-            />
-          </div>
+        <div className="flex justify-end mt-4 gap-4 mb-2">
+          <Button type="button" className="btn btn-secondary" onClick={onClose}>
+            Close
+          </Button>
+          <Button type="submit" className="btn btn-primary green-analyze-btn">
+            Upload
+          </Button>
         </div>
-      </>
-    </ModalForm>
+      </form>
+    </FormModal>
   );
 }

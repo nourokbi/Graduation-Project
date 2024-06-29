@@ -1,10 +1,51 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { ErrorMessage, Field, Formik, useFormik, Form } from "formik";
 import { Puff } from "react-loader-spinner";
 import * as Yup from "yup";
 
+const governrates = [
+  "Alexandria",
+  "Aswan",
+  "Asyut",
+  "Beheira",
+  "Beni Suef",
+  "Cairo",
+  "Dakahlia",
+  "Damietta",
+  "Faiyum",
+  "Gharbia",
+  "Giza",
+  "Ismailia",
+  "Kafr El Sheikh",
+  "Luxor",
+  "Matruh",
+  "Minya",
+  "Monufia",
+  "New Valley",
+  "North Sinai",
+  "Port Said",
+  "Qalyubia",
+  "Qena",
+  "Red Sea",
+  "Sharqia",
+  "Sohag",
+  "South Sinai",
+  "Suez",
+];
+
+const sectors = [
+  "General",
+  "Agriculture",
+  "Health",
+  "Energy",
+  "Water",
+  "Bio-diversity",
+];
+
 const validationSchema = Yup.object({
   dataset: Yup.string().required("Required"),
+  governrate: Yup.string().required("Required"),
   index: Yup.string().required("Required"),
   sector: Yup.string().required("Required"),
   timeZone: Yup.object().shape({
@@ -34,25 +75,22 @@ const validationSchema = Yup.object({
           if (!start || !end) return true;
           return new Date(end) > new Date(start); // Check if end date is after start date
         }
-      )
-      .test(
-        "is-before-current",
-        "End date must be before current date",
-        function (end) {
-          const currentDate = new Date();
-          if (!end) return true; // If end date is missing, let Yup handle the required validation
-          return new Date(end) < currentDate; // Check if end date is before current date
-        }
       ),
   }),
 });
 
-export default function AnalyzeForm() {
+export default function AnalyzeForm({
+  setAnalyzeData,
+  fetchData,
+  isLoading,
+  setIsLoading,
+}) {
   return (
     <div className="analyze-form">
       <Formik
         initialValues={{
           dataset: "",
+          governrate: "",
           index: "",
           sector: "",
           timeZone: {
@@ -61,15 +99,17 @@ export default function AnalyzeForm() {
           },
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            // alert("Submitting");
-            setSubmitting(false);
-          }, 4000);
+        onSubmit={(values) => {
+          setIsLoading(true); // Set loading state to true (Show loading spinner
+          setAnalyzeData((prevData) => {
+            const newData = { ...prevData, ...values };
+            fetchData(newData); // Call the fetch function with updated data
+            return newData;
+          });
         }}
       >
-        {({ isSubmitting }) => (
-          <Form>
+        {({ handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
             <div className="column">
               <div className="column-item">
                 <label htmlFor="dataset">Dataset</label>
@@ -78,6 +118,10 @@ export default function AnalyzeForm() {
                   placeholder="Select dataset..."
                   as="select"
                 >
+                  {" "}
+                  {
+                    //! This data should be fetched from the backend
+                  }
                   <option value="" default>
                     Select dataset...
                   </option>
@@ -89,35 +133,74 @@ export default function AnalyzeForm() {
               </div>
 
               <div className="column-item">
-                <label htmlFor="index">Index</label>
-                <Field name="index" placeholder="Select index..." as="select">
+                <label htmlFor="governrate">Governrate</label>
+                <Field
+                  name="governrate"
+                  placeholder="Select governrate..."
+                  as="select"
+                >
                   <option value="" default>
-                    Select index...
+                    Select governrate...
                   </option>
-                  <option value="FR">FR</option>
-                  <option value="CD">CD</option>
-                  <option value="CDCI">CDCI</option>
-                  <option value="TXx">TXx</option>
-                  <option value="TMx">TMx</option>
+                  {governrates.map((governrate) => (
+                    <option key={governrate} value={governrate}>
+                      {governrate}
+                    </option>
+                  ))}
                 </Field>
-                <ErrorMessage
-                  name="index"
-                  component="div"
-                  className="error-message"
-                />
+                <ErrorMessage name="governrate" component="div" />
               </div>
             </div>
 
             <div className="column">
-              <div className="full-width">
+              <div className="column-item">
                 <label htmlFor="sector">Sector</label>
                 <Field name="sector" placeholder="Select sector..." as="select">
                   <option value="" default>
                     Select sector...
                   </option>
-                  <option value="general">General</option>
+                  {sectors.map((sector) => (
+                    <option key={sector} value={sector}>
+                      {sector}
+                    </option>
+                  ))}
                 </Field>
-                <ErrorMessage name="sector" component="div" className="error-message" />
+                <ErrorMessage name="sector" component="div" />
+              </div>
+              <div className="column-item">
+                <div className="label-row">
+                  <label htmlFor="index">Index</label>
+                  <span>
+                    {
+                      //! Link this anchor to the indices page, Add a tooltip here,}
+                    }
+                    <a href="/">!</a>
+                  </span>
+                </div>
+                {
+                  //! This data should be fetched from the backend
+                }
+                <Field name="index" placeholder="Select index..." as="select">
+                  <option value="" default>
+                    Select index...
+                  </option>
+                  <option value="FD">Frost Days</option>
+                  <option value="SU">Summer Days</option>
+                  <option value="ID">ID</option>
+                  <option value="TR">TNx</option>
+                  <option value="TXx">TXx</option>
+                  <option value="TNx">TNx</option>
+                  <option value="TXn">TXn</option>
+                  <option value="TNn">TNn</option>
+                  <option value="GSL">GSL</option>
+                  <option value="HDD">HDD</option>
+                  <option value="CDD">CDD</option>
+                  <option value="TX90p">TX90p</option>
+                  <option value="TN90p">TN90p</option>
+                  <option value="TX10p">TX10p</option>
+                  <option value="TN10p">TN10p</option>
+                </Field>
+                <ErrorMessage name="index" component="div" />
               </div>
             </div>
 
@@ -145,8 +228,12 @@ export default function AnalyzeForm() {
             </div>
             <div className="column">
               <div className="column-item full-width">
-                <button type="submit" className="green-analyze-btn" disabled={isSubmitting}>
-                  {isSubmitting ? (
+                <button
+                  type="submit"
+                  className="green-analyze-btn"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
                     <Puff
                       visible={true}
                       height="30"

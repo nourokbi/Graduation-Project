@@ -24,7 +24,7 @@ export default function DashboardNavbar() {
           Indices
         </NavLink>
         <NavLink
-          to="signup"
+          to="analyst-requests"
           style={({ isActive }) => (isActive ? activeStyles : null)}
         >
           Analyst Requests

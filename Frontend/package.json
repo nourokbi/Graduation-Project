@@ -13,10 +13,13 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.18",
+    "@nextui-org/react": "^2.4.1",
     "flowbite-react": "^0.9.0",
     "formik": "^2.4.6",
+    "framer-motion": "^11.2.10",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
+    "leaflet.control.layers.tree": "^1.1.0",
     "lucide-react": "^0.379.0",
     "miragejs": "^0.1.48",
     "react": "^18.2.0",
@@ -33,10 +36,13 @@
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
     "vite": "^5.1.4"
   }
 }

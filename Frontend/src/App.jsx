@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Analyze from "./pages/Analyze/Analyze";
 import DashboardLayout from "./components/DashboardLayout";
 import Datasets from "./pages/Dashboard/Datasets/Datasets";
-import Indices from "./pages/Dashboard/Indices";
+import Indices from "./pages/Dashboard/Indices/Indices";
 import Signup from "./pages/Dashboard/Signup";
-import AuthRequired from "./components/AuthRequired";
+import AuthRequired from "./components/auth/AuthRequired";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import AnalystRequest from "./pages/Dashboard/AnalystRequest";
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
             <Route path="dashboard" element={<DashboardLayout />}>
               <Route index element={<Datasets />} />
               <Route path="indices" element={<Indices />} />
-              <Route path="signup" element={<Signup />} />
+              <Route path="analyst-requests" element={<AnalystRequest />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
