@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Analyze from "./pages/Analyze/Analyze";
+import HomePage from "./pages/Home/HomePage";
+import About from "./pages/About/AboutPage";
+import Analyze from "./pages/Analyze/AnalyzePage";
 import DashboardLayout from "./components/DashboardLayout";
 import Datasets from "./pages/Dashboard/Datasets/Datasets";
 import Indices from "./pages/Dashboard/Indices/Indices";
-import Signup from "./pages/Dashboard/Signup";
+// import Signup from "./pages/Dashboard/Signup";
 import AuthRequired from "./components/auth/AuthRequired";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
@@ -18,7 +18,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<HomePage />} />
           <Route path="analyze" element={<Analyze />} />
           <Route path="about" element={<About />} />
           <Route path="login" element={<Login />} />

@@ -50,8 +50,12 @@ export default function Map({
       zoom={zoom}
       className={className}
       style={style}
+      // crs={"EPSG:4326"}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {/* <TileLayer
+        url="https://wi.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      /> */}
       {feature ? (
         <FeatureGroup>
           <EditControl

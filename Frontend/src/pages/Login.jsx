@@ -96,7 +96,7 @@ export default function Login() {
                 <div className="not-register">
                   <p>
                     {`Don't have an account yet?`}
-                    <a href="/dashboard/signup"> Request account </a>
+                    {/* <a href="/dashboard/signup"> Request account </a> */}
                   </p>
                 </div>
               </div>

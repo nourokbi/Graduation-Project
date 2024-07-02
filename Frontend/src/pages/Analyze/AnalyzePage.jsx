@@ -6,7 +6,6 @@ import OutputModal from "../../components/Modals/OutputModal";
 import { Button, useDisclosure } from "@nextui-org/react";
 import { FaEye } from "react-icons/fa";
 import LayeredMap from "./LayeredMap";
-// import LayeredMap from "./LayeredMap";
 
 export default function Analyze() {
   const [analyzeData, setAnalyzeData] = useState({});

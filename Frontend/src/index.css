@@ -3,10 +3,13 @@
 @tailwind utilities;
 
 * {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -15,7 +18,7 @@ body {
 }
 
 :root {
-  --acent-color: #3FA34D;
+  --acent-color: #3fa34d;
   --hover-color: #1b6d26;
   --section-margin: 65px;
   --section-padding: 10px 5px;
@@ -34,7 +37,8 @@ body {
   cursor: grab;
   background: #555;
 }
-select, input {
+select,
+input {
   width: 100%;
   height: 45px;
   padding: 10px;
@@ -57,6 +61,7 @@ button {
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
+  transition: 0.2s;
 }
 button:disabled {
   background-color: #cccccc;
@@ -68,7 +73,6 @@ button:disabled {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  
 }
 .site-wrapper main {
   margin-bottom: auto;
@@ -103,7 +107,7 @@ button:disabled {
   border-radius: 10px;
 }
 
-.bg-image{
+.bg-image {
   width: 100%;
   height: calc(100vh - 60px);
   position: absolute;
@@ -116,10 +120,9 @@ button:disabled {
 }
 /* Section Styles */
 /* Navbar */
-.nav-container{
+.nav-container {
   height: 60px;
   margin-bottom: var(--section-margin);
-  
 }
 header {
   width: 100%;
@@ -237,6 +240,9 @@ header .nav-login:hover {
   flex-wrap: wrap;
   gap: 20px;
   padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 }
 .analyze-section .analyze-info {
   width: 40%;
@@ -245,13 +251,13 @@ header .nav-login:hover {
   font-size: 2rem;
   font-weight: bold;
   margin: 25px 0;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 .analyze-section .analyze-info p {
   font-size: 1.2rem;
   font-weight: 500;
   margin-bottom: 35px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 .analyze-section .analyze-img {
   min-width: 300px;
@@ -259,7 +265,7 @@ header .nav-login:hover {
 }
 .analyze-section .analyze-img .analyze-section-map {
   width: 100%;
-  height: 400px;
+  height: 450px;
   border-radius: 10px;
 }
 @media screen and (max-width: 967px) {
@@ -279,16 +285,15 @@ header .nav-login:hover {
 }
 @media screen and (max-width: 550px) {
   .intro-section h1 {
-      font-size: 2.5rem;
-    }
-    .intro-section p {
-      font-size: 1.5rem;
-    }
-    .analyze-section .analyze-img {
-      display: none;
-    }
+    font-size: 2.5rem;
+  }
+  .intro-section p {
+    font-size: 1.5rem;
+  }
+  .analyze-section .analyze-img {
+    display: none;
+  }
 }
-
 
 /* Analyze page */
 .analyze-bg-image {
@@ -344,7 +349,7 @@ header .nav-login:hover {
   flex-direction: column;
   gap: 5px;
 }
-.column .full-width select{
+.column .full-width select {
   width: 100%;
 }
 .column .full-width button {
@@ -357,20 +362,13 @@ header .nav-login:hover {
   left: 0;
   bottom: -50px;
 }
-.column .column-item label span a {
-  width: 40px;
-  height: 40px;
-  background-color: var(--acent-color);
-  color: white;
-  border-radius: 50%;
-}
 .column .column-item .label-row {
   display: flex;
   align-items: center;
   gap: 10px;
   color: black;
 }
-.column .column-item .label-row span {
+.column .column-item .label-row a {
   width: 18px;
   height: 18px;
   background-color: var(--acent-color);
@@ -382,8 +380,9 @@ header .nav-login:hover {
   cursor: pointer;
   font-size: 15px;
   font-weight: bold;
+  padding: 10px;
 }
-.column .column-item .label-row span:hover {
+.column .column-item .label-row a:hover {
   background-color: var(--hover-color);
 }
 @media screen and (max-width: 967px) {
@@ -398,7 +397,7 @@ header .nav-login:hover {
     width: 100%;
     gap: 20px;
   }
-  .column-item{
+  .column-item {
     width: 100%;
   }
   .map {
@@ -410,6 +409,9 @@ header .nav-login:hover {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   /* margin: auto; */
+  height: 400px;
+  width: 80%;
+  z-index: 0;
 }
 .leaflet-container {
   height: 400px;
@@ -423,13 +425,12 @@ header .nav-login:hover {
   top: 30px;
   left: 30px;
 }
-.output-action-btns{
+.output-action-btns {
   display: flex;
   justify-content: end;
   gap: 10px;
   padding: 10px;
 }
-
 
 /* Dashboard Page */
 .dashboard-container {
@@ -438,12 +439,11 @@ header .nav-login:hover {
   flex-direction: column;
   gap: 30px;
 }
-.dashboard-container .dash-nav{
+.dashboard-container .dash-nav {
   display: flex;
   align-items: center;
   gap: 20px;
   padding: 10px;
-
 }
 .dashboard-container .dash-nav a {
   color: black;
@@ -456,7 +456,7 @@ header .nav-login:hover {
 /* Dataset */
 .dataset-container {
   width: 100%;
-  padding: .5rem 0;
+  padding: 0.5rem 0;
 }
 .dataset-head {
   display: flex;
@@ -491,7 +491,7 @@ header .nav-login:hover {
   cursor: pointer;
 }
 .upload-btn:hover {
-  background-color: var(--hover-color) ;
+  background-color: var(--hover-color);
 }
 /* Table */
 .table-row {
@@ -538,7 +538,7 @@ header .nav-login:hover {
   padding: 8px 0;
 }
 .table-row .table-cell .edit-btn {
-  background-color: #3FA34D;
+  background-color: #3fa34d;
   color: white;
 }
 .table-row .table-cell .edit-btn:hover {
@@ -553,7 +553,6 @@ header .nav-login:hover {
 .table-row .table-cell .delete-btn:hover {
   background-color: #f44336;
   color: white;
-
 }
 .delete-btn {
   font-size: 16px;
@@ -572,7 +571,6 @@ header .nav-login:hover {
 }
 /* Upload Form */
 
-
 /* Delete Modal  */
 .delete-form h2 {
   font-size: 1.75rem;
@@ -580,7 +578,7 @@ header .nav-login:hover {
   margin: 20px;
 }
 .delete-form .cancel-btn {
-  background-color: #3FA34D;
+  background-color: #3fa34d;
   font-size: 16px;
   color: white;
   border-radius: 10px;
@@ -591,7 +589,7 @@ header .nav-login:hover {
   background-color: #1b6d26;
 }
 /* Indices */
-.indices h1{
+.indices h1 {
   font-size: 2rem;
   font-weight: bold;
 }
@@ -621,7 +619,6 @@ header .nav-login:hover {
   align-items: center;
   justify-content: end;
   padding: 20px 0;
-  
 }
 .edit-index-form button {
   /* width: 0px; */
@@ -637,16 +634,15 @@ header .nav-login:hover {
   background-color: #1b6d26;
 }
 
-
 /* Analyst Requests */
-.analyst-request h1{
+.analyst-request h1 {
   font-size: 2rem;
   font-weight: bold;
 }
 .analyst-request p {
   font-size: 1.2rem;
   font-weight: 500;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 }
 .analyst-request button {
   font-size: 1.1rem;
@@ -657,7 +653,7 @@ header .nav-login:hover {
   cursor: pointer;
 }
 .analyst-request .approve {
-  background-color: #3FA34D;
+  background-color: #3fa34d;
 }
 .analyst-request .approve:hover {
   background-color: #1b6d26;
@@ -672,6 +668,156 @@ header .nav-login:hover {
   color: white;
 }
 /* About */
+/* About Navbar */
+.about-container {
+  position: relative;
+}
+.about-nav {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 10px;
+}
+.about-nav a {
+  font-size: 1.1rem;
+  color: var(--acent-color);
+  font-weight: 700;
+  border-radius: 10px;
+}
+.about-nav a:hover {
+  color: #2e2e2e;
+  text-decoration: underline;
+}
+.about-nav.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #3fa34d;
+  color: white;
+  z-index: 10000;
+}
+.about-nav.sticky a {
+  color: white;
+}
+/* About Indices */
+.about-indices h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 20px 0;
+  text-align: center;
+}
+.about-indices p {
+  font-size: 1.2rem;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.about-indices .quick-links {
+  margin: 1.5rem 0;
+  padding: 2rem;
+  border-radius: 10px;
+  background-color: rgb(233, 233, 233);
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+}
+.about-indices .quick-links h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.about-indices .quick-links .links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+.about-indices .quick-links .links h3 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.about-indices .quick-links .links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.about-indices .quick-links .links li {
+  width: fit-content;
+  padding: 5px 15px;
+  font-size: 1rem;
+  border: 2px solid var(--acent-color);
+  border-radius: 5px;
+  transition: 0.2s;
+}
+.about-indices .quick-links .links li:hover {
+  background-color: var(--acent-color);
+  color: white;
+}
+.indices-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-top: 50px;
+}
+.indices-cards .index-card {
+  border-radius: 10px;
+  box-shadow: 5px 8px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+.indices-cards h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background-color: var(--acent-color);
+  color: white;
+  border-bottom: 2px solid var(--acent-color);
+  padding: 8px 0px;
+}
+.indices-cards .description {
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 25px;
+}
+/* About Datasets */
+.about-datasets {
+  margin: 60px 0;
+  padding: 50px 0;
+  background-color: #161616;
+  color: white;
+}
+.about-datasets h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+.about-datasets .datasets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+.about-datasets .datasets .dataset-card {
+  border-radius: 10px;
+  box-shadow: 5px 8px 20px rgba(197, 197, 197, 0.1);
+  background-color: rgb(26, 26, 26);
+  color: rgb(202, 233, 204);
+}
+.about-datasets .datasets .dataset-card h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background-color: var(--hover-color);
+  color: white;
+  padding: 8px 0px;
+}
+.about-datasets .datasets .dataset-card .description {
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 25px;
+}
 
 /* Learn */
 
@@ -702,7 +848,6 @@ header .nav-login:hover {
 }
 .login-form .form-group input::placeholder {
   font-size: 0.85rem;
-
 }
 .password-field {
   position: relative;
@@ -733,11 +878,6 @@ header .nav-login:hover {
   text-decoration: underline;
 }
 
-
-
-
-
-
 /* Footer */
 footer {
   margin-top: auto;
@@ -757,3 +897,24 @@ footer span {
   font-weight: bold;
   margin-left: 10px;
 }
+
+/* 
+ */
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: arial;
+}
+
+/* #map {
+  position: absolute;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-color: black;
+  border-width: thin;
+  z-index: 0;
+} */
