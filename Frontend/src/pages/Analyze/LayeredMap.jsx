@@ -313,7 +313,7 @@ const LayeredMap = () => {
     };
   }, []);
 
-  return <div id="map" className="map" style={{ height: "600px", width: "100%" }}></div>;
+  return <div id="map" className="map"></div>;
 };
 
 export default LayeredMap;

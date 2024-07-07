@@ -19,7 +19,7 @@ const tempIndices = [
     name: 'SU',
     description: (
       <div>
-        <p>Annual count of days when <em>TX</em> (daily maximum temperature) &gt; 25°C.</p>
+        <p className="important">Annual count of days when <em>TX</em> (daily maximum temperature) &gt; 25°C.</p>
         <p>
           Let <em>TX<sub>ij</sub></em> be the daily maximum temperature on day <em>i</em> in year <em>j</em>.
         </p>

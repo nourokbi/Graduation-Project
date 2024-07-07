@@ -10,41 +10,79 @@ import {
 } from "@nextui-org/react";
 import * as Yup from "yup";
 import { FileUp } from "lucide-react";
+import { useAuth } from "../../../contexts/authContext";
+
+const URL_BASE = "http://127.0.0.1:5000/upload_dataset";
 
 export default function UploadFormModal() {
   const { onOpen, isOpen, onClose, onOpenChange } = useDisclosure();
+  // used in sending access to the api endpoint
+  const { userData } = useAuth();
 
   const validationSchema = Yup.object({
-    datasetName: Yup.string().required("Required"),
-    datasetType: Yup.string().required("Required"),
-    variableName: Yup.array()
-      .of(Yup.string().required("Required"))
-      .min(1, "Select at least one variable"),
+    name: Yup.string().required("Enter Dataset Name"),
+    type: Yup.string().required("Enter Dataset Type"),
+    variableName: Yup.string().required("Enter Variable name"),
+    view: Yup.string().required("Enter view"),
     description: Yup.string(),
     file: Yup.mixed()
       .required("Required")
       .test("fileFormat", "Unsupported Format", (value) => {
-        return value && value.name.endsWith(".nc");
+        console.log("File value:", value);
+        return value && value.endsWith(".nc");
       }),
   });
 
   const formik = useFormik({
     initialValues: {
-      datasetName: "",
-      datasetType: "",
-      variableName: [],
+      name: "",
+      type: "",
+      variableName: "",
       description: "",
+      view: "",
       file: null,
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const fetchData = {
+        path_local: values.file,
+        name: values.name,
+        type: "min_temp",
+        var_name: "min_temp",
+        access: "admin",
+        view: "onlyme",
+        description: "sdwadswasd",
+      };
+      console.log("fetchData:", fetchData);
+
+      try {
+        const response = await fetch(URL_BASE, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${userData.access}`,
+          },
+          method: "POST",
+          body: JSON.stringify(fetchData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const result = await response.json();
+        console.log(result);
+        // Handle the response data as needed
+      } catch (error) {
+        console.error("There was a problem uploading dataset:", error);
+      }
     },
   });
 
-  const buttonText = <>
-    <FileUp size={20} /> Upload
-  </>
+  const buttonText = (
+    <>
+      <FileUp size={20} /> Upload
+    </>
+  );
 
   return (
     <FormModal
@@ -61,57 +99,79 @@ export default function UploadFormModal() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="col-span-1">
             <Input
-              label="Dataset Name*"
+              label="Dataset Name *"
               placeholder="Enter dataset name..."
-              name="datasetName"
-              errorMessage={formik.errors.datasetName}
-              value={formik.values.datasetName}
+              name="name"
+              errorMessage={formik.errors.name}
+              value={formik.values.name}
               onChange={formik.handleChange}
               labelPlacement="outside"
             />
-            {formik.errors.datasetName && formik.touched.datasetName && (
-              <div className="text-red-500">{formik.errors.datasetName}</div>
+            {formik.errors.name && formik.touched.name && (
+              <div className="text-red-500">{formik.errors.name}</div>
             )}
           </div>
           <div className="col-span-1">
             <Select
               labelPlacement={"outside"}
-              label="Dataset Type*"
-              errorMessage={formik.errors.datasetType}
+              label="Dataset Type *"
+              errorMessage={formik.errors.type}
               placeholder="Select dataset type..."
               className="w-full"
-              name="datasetType"
-              value={formik.values.datasetType}
-              onChange={formik.handleChange}
+              name="type"
+              value={formik.values.type}
+              onChange={(e) => formik.setFieldValue("type", e.target.value)}
             >
-              <SelectItem value={"TMP"}>Temprature</SelectItem>
-              <SelectItem value={"PR"}>Percitipation</SelectItem>
-              <SelectItem value={"HCW"}>Heat & Cold Waves</SelectItem>
+              <SelectItem value={"max_temp"}>Max Temprature</SelectItem>
+              <SelectItem value={"min_temp"}>Min Temprature</SelectItem>
+              <SelectItem value={"min_max_temp"}>
+                Min & Max Temprature
+              </SelectItem>
+              {/* <SelectItem value={"min_mean_temp"}>
+                Min & Mean Temprature
+              </SelectItem>
+              <SelectItem value={"max_mean_temp"}>
+                Max & Mean Temprature
+              </SelectItem> */}
+              <SelectItem value={"mean_temp"}>Mean Temprature</SelectItem>
+              <SelectItem value={"pr"}>Percitipation</SelectItem>
             </Select>
-            {formik.errors.datasetType && formik.touched.datasetType && (
-              <div className="text-red-500">{formik.errors.datasetType}</div>
+            {formik.errors.type && formik.touched.type && (
+              <div className="text-red-500">{formik.errors.type}</div>
             )}
           </div>
-          <div className="col-span-full">
-            <Select
-              labelPlacement={"outside"}
-              label="Variable Name*"
-              selectionMode="multiple"
-              errorMessage={formik.errors.variableName}
-              placeholder="Select variable name..."
-              className="w-full"
+          <div className="col-span-1">
+            <Input
+              label="Variable Name *"
+              placeholder="Enter dataset name..."
               name="variableName"
+              errorMessage={formik.errors.variableName}
               value={formik.values.variableName}
-              onChange={formik.handleChange}
-            >
-              <SelectItem value={"max"}>Max Temprature</SelectItem>
-              <SelectItem value={"min"}>Min Temprature</SelectItem>
-              <SelectItem value={"minmax"}>Min & Max Temprature</SelectItem>
-              <SelectItem value={"pr"}>Percitipation</SelectItem>
-              <SelectItem value={"waves"}>Waves</SelectItem>
-            </Select>
+              onChange={(e) =>
+                formik.setFieldValue("variableName", e.target.value)
+              }
+              labelPlacement="outside"
+            />
             {formik.errors.variableName && formik.touched.variableName && (
               <div className="text-red-500">{formik.errors.variableName}</div>
+            )}
+          </div>
+          <div className="col-span-1">
+            <Select
+              labelPlacement={"outside"}
+              label="Dataset view *"
+              errorMessage={formik.errors.view}
+              placeholder="Select dataset view..."
+              className="w-full"
+              name="view"
+              value={formik.values.view}
+              onChange={(e) => formik.setFieldValue("view", e.target.value)}
+            >
+              <SelectItem value={"onlyme"}>Only Me</SelectItem>
+              <SelectItem value={"global"}>Global</SelectItem>
+            </Select>
+            {formik.errors.view && formik.touched.view && (
+              <div className="text-red-500">{formik.errors.view}</div>
             )}
           </div>
         </div>

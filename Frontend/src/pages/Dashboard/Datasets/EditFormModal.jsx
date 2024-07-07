@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
 import {
   Button,
   Input,
@@ -10,24 +12,83 @@ import { useFormik } from "formik";
 import { FormModal } from "../../../components/Modals/FormModal";
 import * as Yup from "yup";
 import { FileCog } from "lucide-react";
+import { useAuth } from "../../../contexts/authContext";
+import { useEffect } from "react";
 
-export default function EditFormModal() {
+export default function EditFormModal({ id, onUpdate }) {
+  const { userData } = useAuth();
   const { onOpen, isOpen, onClose, onOpenChange } = useDisclosure();
-
+  const DATASET_URL = `http://127.0.0.1:5000/retrieve_dataset/${userData.access}/${id}`;
+  const UPDATE_URL = `http://127.0.0.1:5000/update_dataset/${userData.access}/${id}`;
   const validationSchema = Yup.object({});
 
   const formik = useFormik({
     initialValues: {
-      datasetName: "",
-      datasetType: "",
-      variableName: [],
+      name: "",
+      type: "",
+      varName: "",
+      view: "",
       description: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const fetchData = {
+        name: values.name,
+        type: values.type,
+        var_name: values.varName,
+        view: values.view,
+        description: values.description,
+      };
+
+      try {
+        const response = await fetch(UPDATE_URL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(fetchData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const result = await response.json();
+        console.log("Update result", result);
+        onUpdate();
+        onClose(); // Close the modal after successful update
+      } catch (error) {
+        console.error("There was a problem updating the dataset:", error);
+      }
     },
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${DATASET_URL}`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const result = await response.json();
+        formik.setValues({
+          name: result.name,
+          type: result.type,
+          view: result.view,
+          varName: result.var_name,
+          description: result.description,
+        });
+      } catch (error) {
+        console.error("There was a problem retrieving datasets:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const buttonText = (
     <>
@@ -37,15 +98,12 @@ export default function EditFormModal() {
 
   return (
     <FormModal
-      //! Edit Form fields => Dataset name, type, varName, description
-      //! Delete Form fields => Delete
       onOpen={onOpen}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       header={"Upload Dataset"}
       buttonText={buttonText}
       buttonStyle={"edit-btn"}
-
     >
       <form onSubmit={formik.handleSubmit} className="upload-form">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -53,57 +111,69 @@ export default function EditFormModal() {
             <Input
               label="Dataset Name*"
               placeholder="Enter dataset name..."
-              name="datasetName"
-              errorMessage={formik.errors.datasetName}
-              value={formik.values.datasetName}
+              name="name"
+              errorMessage={formik.errors.name}
+              value={formik.values.name}
               onChange={formik.handleChange}
               labelPlacement="outside"
             />
-            {formik.errors.datasetName && formik.touched.datasetName && (
-              <div className="text-red-500">{formik.errors.datasetName}</div>
+            {formik.errors.name && formik.touched.name && (
+              <div className="text-red-500">{formik.errors.name}</div>
             )}
           </div>
           <div className="col-span-1">
             <Select
               labelPlacement={"outside"}
-              label="Dataset Type*"
-              errorMessage={formik.errors.datasetType}
+              label="Dataset Type *"
+              errorMessage={formik.errors.type}
               placeholder="Select dataset type..."
               className="w-full"
-              name="datasetType"
-              value={formik.values.datasetType}
-              onChange={formik.handleChange}
+              name="type"
+              value={formik.values.type}
+              onChange={(value) => formik.setFieldValue("type", value)}
             >
-              <SelectItem value={"TMP"}>Temprature</SelectItem>
-              <SelectItem value={"PR"}>Percitipation</SelectItem>
-              <SelectItem value={"HCW"}>Heat & Cold Waves</SelectItem>
-            </Select>
-            {formik.errors.datasetType && formik.touched.datasetType && (
-              <div className="text-red-500">{formik.errors.datasetType}</div>
-            )}
-          </div>
-          <div className="col-span-full">
-            <Select
-              labelPlacement={"outside"}
-              label="Variable Name*"
-              selectionMode="multiple"
-              errorMessage={formik.errors.variableName}
-              placeholder="Select variable name..."
-              className="w-full"
-              name="variableName"
-              value={formik.values.variableName}
-              onChange={formik.handleChange}
-            >
-              <SelectItem value={"max"}>Max Temprature</SelectItem>
-              <SelectItem value={"min"}>Min Temprature</SelectItem>
-              <SelectItem value={"minmax"}>Min & Max Temprature</SelectItem>
+              <SelectItem value={"max_temp"}>Max Temprature</SelectItem>
+              <SelectItem value={"min_temp"}>Min Temprature</SelectItem>
+              <SelectItem value={"min_max_temp"}>
+                Min & Max Temprature
+              </SelectItem>
+              <SelectItem value={"mean_temp"}>Mean Temprature</SelectItem>
               <SelectItem value={"pr"}>Percitipation</SelectItem>
-              <SelectItem value={"waves"}>Waves</SelectItem>
             </Select>
-            {formik.errors.variableName && formik.touched.variableName && (
-              <div className="text-red-500">{formik.errors.variableName}</div>
+            {formik.errors.type && formik.touched.type && (
+              <div className="text-red-500">{formik.errors.type}</div>
             )}
           </div>
+          <div className="col-span-1">
+            <Input
+              label="Variable Name*"
+              placeholder="Enter variable name..."
+              name="varName"
+              errorMessage={formik.errors.varName}
+              value={formik.values.varName}
+              onChange={formik.handleChange}
+              labelPlacement="outside"
+            />
+            {formik.errors.varName && formik.touched.varName && (
+              <div className="text-red-500">{formik.errors.varName}</div>
+            )}
+          </div>
+          <Select
+            labelPlacement={"outside"}
+            label="View "
+            errorMessage={formik.errors.view}
+            placeholder="Select view..."
+            className="w-full"
+            name="view"
+            value={formik.values.view}
+            onChange={(value) => formik.setFieldValue("view", value)}
+          >
+            <SelectItem value={"1"}>Global</SelectItem>
+            <SelectItem value={"0"}>Only Me</SelectItem>
+          </Select>
+          {formik.errors.view && formik.touched.view && (
+            <div className="text-red-500">{formik.errors.view}</div>
+          )}
         </div>
         <div className="mt-4">
           <Textarea
@@ -119,7 +189,7 @@ export default function EditFormModal() {
           <Button type="button" className="btn btn-secondary" onClick={onClose}>
             Close
           </Button>
-          <Button type="submit"  className="btn btn-primary green-analyze-btn">
+          <Button type="submit" className="btn btn-primary green-analyze-btn">
             Edit
           </Button>
         </div>

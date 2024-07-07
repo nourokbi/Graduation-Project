@@ -85,9 +85,7 @@ export default function AnalyzeForm({
   isLoading,
   setIsLoading,
 }) {
-  const getGovernrateData = (governrate) => {
-    
-  }
+  const getGovernrateData = (governrate) => {};
   return (
     <div className="analyze-form">
       <Formik
@@ -111,7 +109,7 @@ export default function AnalyzeForm({
           });
         }}
       >
-        {({ handleSubmit }) => (
+        {({ handleSubmit, handleChange }) => (
           <Form onSubmit={handleSubmit}>
             <div className="column">
               <div className="column-item">
@@ -141,8 +139,10 @@ export default function AnalyzeForm({
                   name="governrate"
                   placeholder="Select governrate..."
                   as="select"
-                  onChange={(e) => { getGovernrateData(e.target.value) }}
-
+                  onChange={(e) => {
+                    handleChange(e);
+                    getGovernrateData(e.target.value);
+                  }}
                 >
                   <option value="" default>
                     Select governrate...
@@ -175,10 +175,10 @@ export default function AnalyzeForm({
               <div className="column-item">
                 <div className="label-row">
                   <label htmlFor="index">Index</label>
-                    {
-                      //! Link this anchor to the indices page, Add a tooltip here,}
-                    }
-                    <a href="/about#indices">!</a>
+                  {
+                    //! Link this anchor to the indices page, Add a tooltip here,}
+                  }
+                  <a href="/about#indices">!</a>
                 </div>
                 {
                   //! This data should be fetched from the backend

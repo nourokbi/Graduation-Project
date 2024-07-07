@@ -4,6 +4,9 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Puff } from "react-loader-spinner";
 import * as Yup from "yup";
+import { useAuth } from "../contexts/authContext";
+import { Navigate, useNavigate } from "react-router-dom";
+import { doSignInWithEmailAndPassword } from "../firebase/auth";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -13,19 +16,31 @@ const validationSchema = Yup.object({
 });
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { isLoggedIn, error, setErrorHandler, userData } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
-  const onSubmit = (values, {setSubmitting}) => {  
-    setTimeout(() => {
-      // alert(JSON.stringify(values, null, 2));
-      console.log(values);
-      setSubmitting(false);
-    }, 400);
-
-  }
+  const onSubmit = async (values, { setSubmitting }) => {
+    if (!isSigningIn) {
+      setIsSigningIn(true);
+      try {
+        await doSignInWithEmailAndPassword(
+          values.email,
+          values.password,
+          setErrorHandler
+        );
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Error during login:", error);
+      }
+    }
+    setSubmitting(false);
+  };
 
   return (
     <div className="login-container">
+      {isLoggedIn && <Navigate to="/" replace={true} />}
       <div className="bg-image login-bg"></div>
       <div className="container">
         <Formik
@@ -77,6 +92,7 @@ export default function Login() {
                     className="error-message"
                   />
                 </div>
+                {error && <div className="error-message">{error}</div>}
                 <button
                   type="submit"
                   className="login-btn green-analyze-btn"
@@ -96,7 +112,7 @@ export default function Login() {
                 <div className="not-register">
                   <p>
                     {`Don't have an account yet?`}
-                    {/* <a href="/dashboard/signup"> Request account </a> */}
+                    <a href="/register"> Request account </a>
                   </p>
                 </div>
               </div>

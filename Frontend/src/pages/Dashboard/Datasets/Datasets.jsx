@@ -1,30 +1,84 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // import UploadModalForm from "./UploadFormModal";
 import DeleteModal from "./DeleteModal";
 import EditFormModal from "./EditFormModal";
-import Table from "./Table";
+import Table from "../../../components/ui/Table";
 import UploadFormModal from "./UploadFormModal";
-
-const header = ["Dataset Name", "Type", "Author", "Actions"];
-
-const data = [
-  ["Dataset 1", "Tempreture", "Admin"],
-  ["Dataset 2", "Percitipation", "Admin"],
-  ["Dataset 3", "Tempreture", "Admin"],
-  ["Dataset 4", "Percitipation", "Analyst1"],
-  ["Dataset 5", "Tempreture", "Analyst1"],
-  ["Dataset 6", "Percitipation", "Analyst2"],
-  ["Dataset 7", "Tempreture", "Analyst2"],
-  ["Dataset 8", "Heat Waves", "Admin"],
-  ["Dataset 9", "Tempreture", "Analyst3"],
-  ["Dataset 10", "Percitipation", "Admin2"],
-];
-
-const actions = <> 
-  <EditFormModal />
-  <DeleteModal />
-</>
+import { useAuth } from "../../../contexts/authContext";
+import { useEffect, useMemo, useState } from "react";
 
 export default function Datasets() {
+  const { userData } = useAuth();
+  const [datasets, setDatasets] = useState([]);
+  const [datasetsIDs, setDatasetsIDs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  // const URL_BASE = `http://127.0.0.1:5000/retrieve_all_datasets/analyst123`;
+  const URL_BASE = useMemo(
+    () => `http://127.0.0.1:5000/retrieve_all_datasets/${userData.access}`,
+    [userData.access]
+  );
+
+  const handleDelete = (id) => {
+    console.log("id", id);
+    setDatasets((prev) =>
+      prev.filter((dataset, index) => datasetsIDs[index] !== id)
+    );
+    setDatasetsIDs((prev) => prev.filter((datasetId) => datasetId !== id));
+  };
+
+  const handleUpdate = async () => {
+    await fetchData();
+  };
+
+  const header = ["Dataset Name", "Type", "Author", "Actions"];
+
+  const actions = [
+    (props) => <EditFormModal {...props} onUpdate={handleUpdate} />,
+    (props) => <DeleteModal {...props} onDelete={handleDelete} />,
+  ];
+
+  const destructuringData = (data) => {
+    return data.map((dataset) => {
+      return [
+        dataset.name,
+        dataset.type === "pr" ? "Percipitation" : "Temperature",
+        dataset.access,
+      ];
+    });
+  };
+
+  const destructuringIDs = (data) => {
+    return data.map((dataset) => {
+      return dataset.id;
+    });
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(URL_BASE, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.json();
+      console.log("result", result);
+      setDatasets(destructuringData(result));
+      setDatasetsIDs(destructuringIDs(result));
+      // Handle the response data as needed
+      setLoading(false);
+    } catch (error) {
+      console.error("There was a problem retrieving datasets:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [URL_BASE]);
+
   return (
     <div className="dataset-container">
       <div className="dataset-head">
@@ -36,7 +90,16 @@ export default function Datasets() {
           <UploadFormModal />
         </div>
       </div>
-      <Table data={data} actions={actions} header={header} />
+      {loading ? (
+        <div className="loading">Loading...</div>
+      ) : (
+        <Table
+          data={datasets}
+          ids={datasetsIDs}
+          actions={actions}
+          header={header}
+        />
+      )}
     </div>
   );
 }

@@ -56,12 +56,6 @@ export default function AboutNavbar() {
           Datasets
         </a>
         <a
-          href="#plots"
-          style={activeSection === "plots" ? activeStyles : null}
-        >
-          Plots
-        </a>
-        <a
           href="#project-team"
           style={activeSection === "project-team" ? activeStyles : null}
         >

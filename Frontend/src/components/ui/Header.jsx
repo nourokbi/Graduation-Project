@@ -2,9 +2,12 @@ import { useRef } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
 import { Logo } from "../Logo";
+import { useAuth } from "../../contexts/authContext";
+import { doSignOut } from "../../firebase/auth";
 
 export default function Header() {
   const navRef = useRef();
+  const { isLoggedIn } = useAuth();
   const activeStyles = {
     fontWeight: "bold",
     textDecoration: "underline",
@@ -59,14 +62,20 @@ export default function Header() {
             >
               About
             </NavLink>
-            <NavLink
-              to="/login"
-              // style={({ isActive }) => (isActive ? activeStyles : null)}
-              onClick={closeNavbar}
-              className={"nav-login"}
-            >
-              Login
-            </NavLink>
+            {isLoggedIn ? (
+              <button onClick={() => { doSignOut() }}>
+                Signout
+              </button>
+            ) : (
+              <NavLink
+                to="/login"
+                // style={({ isActive }) => (isActive ? activeStyles : null)}
+                onClick={closeNavbar}
+                className={"nav-login"}
+              >
+                Login
+              </NavLink>
+            )}
             <button onClick={toggleNavbar} className="nav-btn nav-close-btn">
               <FaTimes />
             </button>
