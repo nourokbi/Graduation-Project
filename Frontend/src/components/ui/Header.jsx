@@ -4,6 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import { Logo } from "../Logo";
 import { useAuth } from "../../contexts/authContext";
 import { doSignOut } from "../../firebase/auth";
+import User from "./User";
 
 export default function Header() {
   const navRef = useRef();
@@ -63,13 +64,13 @@ export default function Header() {
               About
             </NavLink>
             {isLoggedIn ? (
-              <button onClick={() => { doSignOut() }}>
-                Signout
-              </button>
+              <User onLogOut={doSignOut} />
             ) : (
               <NavLink
                 to="/login"
-                // style={({ isActive }) => (isActive ? activeStyles : null)}
+                style={({ isActive }) =>
+                  isActive ? { backgroundColor: "#3FA34D", color: "white" } : null
+                }
                 onClick={closeNavbar}
                 className={"nav-login"}
               >

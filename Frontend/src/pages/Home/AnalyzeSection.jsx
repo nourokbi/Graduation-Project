@@ -18,7 +18,10 @@ export default function AnalyzeSection() {
               region of interest and weather databases to start analyzong it{" "}
               <br /> <br />
               Our solution is designed to help you make better decisions and
-              improve your weather analysis process
+              improve your weather analysis process, This can be achieved by
+              offering a set Datasets and weather indicies and give analysts and
+              admin the ability to upload their own datasets and analyze it.
+
             </p>
             <button
               className="analyze-btn green-analyze-btn"

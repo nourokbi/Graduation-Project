@@ -55,6 +55,19 @@ export default function Indices() {
     return Object.values(indicies).map((index) => [index.index_code]);
   };
 
+  const [openedItems, setOpenedItems] = useState([]); // Array to store opened item indexes
+
+  // Function to handle accordion item open/close events
+  const handleOpenChange = (index, open) => {
+    // Update openedItems state with the toggled index
+    setOpenedItems((prevItems) => {
+      if (open) {
+        return [...prevItems, index]; // Add index to openedItems if opened
+      }
+      return prevItems.filter((item) => item !== index); // Remove index if closed
+    });
+  };
+
   return (
     <div className="indices">
       <h1>Indices</h1>
@@ -62,7 +75,13 @@ export default function Indices() {
       {!loading ? (
         <Accordion>
           {sectorNames?.map((sector, index) => (
-            <AccordionItem key={index} title={sector} className="sector-table">
+            <AccordionItem
+              key={index}
+              title={sector}
+              className="sector-table"
+              open={openedItems.includes(index)} // Set open state based on openedItems
+              onOpenChange={(open) => handleOpenChange(index, open)} // Handle open/close events
+            >
               {Object.keys(sectorIndices[index]).length > 0 ? (
                 <Table
                   data={extractIndiciesData(sectorIndices[index])}

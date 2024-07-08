@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useFormik } from "formik";
 import { FormModal } from "../../../components/Modals/FormModal";
 import {
@@ -11,14 +12,15 @@ import {
 import * as Yup from "yup";
 import { FileUp } from "lucide-react";
 import { useAuth } from "../../../contexts/authContext";
+import { useState } from "react";
 
 const URL_BASE = "http://127.0.0.1:5000/upload_dataset";
 
-export default function UploadFormModal() {
+export default function UploadFormModal({ onUpload }) {
   const { onOpen, isOpen, onClose, onOpenChange } = useDisclosure();
-  // used in sending access to the api endpoint
   const { userData } = useAuth();
-
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const validationSchema = Yup.object({
     name: Yup.string().required("Enter Dataset Name"),
     type: Yup.string().required("Enter Dataset Type"),
@@ -32,6 +34,40 @@ export default function UploadFormModal() {
       }),
   });
 
+  const datasetViews = [
+    {
+      value: "onlyme",
+      label: "Only Me",
+    },
+    {
+      value: "global",
+      label: "Global",
+    },
+  ];
+
+  const datasetTypes = [
+    {
+      value: "max_temp",
+      label: "Max Temperature",
+    },
+    {
+      value: "min_temp",
+      label: "Min Temperature",
+    },
+    {
+      value: "min_max_temp",
+      label: "Min & Max Temperature",
+    },
+    {
+      value: "mean_temp",
+      label: "Mean Temperature",
+    },
+    {
+      value: "pr",
+      label: "Percitipation",
+    },
+  ];
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -43,21 +79,19 @@ export default function UploadFormModal() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      setUploading(true);
       const formData = new FormData();
       formData.append("file", values.file);
       formData.append("name", values.name);
-      formData.append("type", values.type);
+      formData.append("type", values.type["currentKey"]);
       formData.append("var_name", values.variableName);
-      formData.append("view", values.view);
+      formData.append("view", values.view["currentKey"]);
       formData.append("description", values.description);
       formData.append("access", userData.access);
 
       try {
         const response = await fetch(URL_BASE, {
-          headers: {
-            // "Content-Type": "multipart/form-data",
-            // Authorization: `Bearer ${userData.access}`,
-          },
+          headers: {},
           method: "POST",
           body: formData,
         });
@@ -65,12 +99,16 @@ export default function UploadFormModal() {
         if (!response.ok) {
           throw new Error("Failed to upload Dataset");
         }
-
-        const result = await response.json();
-        console.log(result);
       } catch (error) {
         console.error("There was a problem uploading dataset:", error);
       }
+      setUploading(false);
+      setIsUploaded(true);
+      setTimeout(() => {
+        setIsUploaded(false);
+        onUpload();
+        onClose();
+      }, 2000);
     },
   });
 
@@ -93,6 +131,11 @@ export default function UploadFormModal() {
       buttonText={buttonText}
       buttonStyle={"upload-form-btn upload-btn"}
     >
+      {isUploaded && (
+        <div className="text-green-500 text-center fs-20 fw-800">
+          Dataset uploaded successfully
+        </div>
+      )}
       <form onSubmit={formik.handleSubmit} className="upload-form">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="col-span-1">
@@ -116,23 +159,14 @@ export default function UploadFormModal() {
               errorMessage={formik.errors.type}
               placeholder="Select dataset type..."
               className="w-full"
-              name="type"
-              value={formik.values.type}
-              onChange={(e) => formik.setFieldValue("type", e.target.value)}
+              selectedKeys={formik.values.type}
+              onSelectionChange={(value) => formik.setFieldValue("type", value)}
             >
-              <SelectItem value={"max_temp"}>Max Temprature</SelectItem>
-              <SelectItem value={"min_temp"}>Min Temprature</SelectItem>
-              <SelectItem value={"min_max_temp"}>
-                Min & Max Temprature
-              </SelectItem>
-              {/* <SelectItem value={"min_mean_temp"}>
-                Min & Mean Temprature
-              </SelectItem>
-              <SelectItem value={"max_mean_temp"}>
-                Max & Mean Temprature
-              </SelectItem> */}
-              <SelectItem value={"mean_temp"}>Mean Temprature</SelectItem>
-              <SelectItem value={"pr"}>Percitipation</SelectItem>
+              {datasetTypes.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
             </Select>
             {formik.errors.type && formik.touched.type && (
               <div className="text-red-500">{formik.errors.type}</div>
@@ -161,12 +195,14 @@ export default function UploadFormModal() {
               errorMessage={formik.errors.view}
               placeholder="Select dataset view..."
               className="w-full"
-              name="view"
-              value={formik.values.view}
-              onChange={(e) => formik.setFieldValue("view", e.target.value)}
+              selectedKeys={formik.values.view}
+              onSelectionChange={(value) => formik.setFieldValue("view", value)}
             >
-              <SelectItem value={"onlyme"}>Only Me</SelectItem>
-              <SelectItem value={"global"}>Global</SelectItem>
+              {datasetViews.map((view) => (
+                <SelectItem key={view.value} value={view.value}>
+                  {view.label}
+                </SelectItem>
+              ))}
             </Select>
             {formik.errors.view && formik.touched.view && (
               <div className="text-red-500">{formik.errors.view}</div>
@@ -216,9 +252,17 @@ export default function UploadFormModal() {
                     className="sr-only"
                     onChange={handleFileChange}
                   />
-                  {formik.errors.file && (
+                  {formik.errors.file ? (
                     <div className="text-red-500"> {formik.errors.file}</div>
-                  )}
+                  ) : formik.values.file ? (
+                    <div>File Uploaded: {formik.values?.file?.name}</div>
+                  ) : null}
+                  {/* {formik.values.file ? (
+                    <span className="pl-2 text-success-500">
+                      <br />
+                      File Uploaded: {formik.values.file.name}
+                    </span>
+                  ) : null} */}
                 </label>
               </div>
             </div>
@@ -228,8 +272,12 @@ export default function UploadFormModal() {
           <Button type="button" className="btn btn-secondary" onClick={onClose}>
             Close
           </Button>
-          <Button type="submit" className="btn btn-primary green-analyze-btn">
-            Upload
+          <Button
+            type="submit"
+            disabled={uploading}
+            className="btn btn-primary green-analyze-btn"
+          >
+            {uploading ? "Uploading..." : "Upload"}
           </Button>
         </div>
       </form>

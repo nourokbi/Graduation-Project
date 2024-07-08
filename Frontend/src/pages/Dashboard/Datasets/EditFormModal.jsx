@@ -22,6 +22,40 @@ export default function EditFormModal({ id, onUpdate }) {
   const UPDATE_URL = `http://127.0.0.1:5000/update_dataset/${userData.access}/${id}`;
   const validationSchema = Yup.object({});
 
+  const datasetViews = [
+    {
+      value: "onlyme",
+      label: "Only Me",
+    },
+    {
+      value: "global",
+      label: "Global",
+    },
+  ];
+
+  const datasetTypes = [
+    {
+      value: "max_temp",
+      label: "Max Temperature",
+    },
+    {
+      value: "min_temp",
+      label: "Min Temperature",
+    },
+    {
+      value: "min_max_temp",
+      label: "Min & Max Temperature",
+    },
+    {
+      value: "mean_temp",
+      label: "Mean Temperature",
+    },
+    {
+      value: "pr",
+      label: "Percitipation",
+    },
+  ];
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -33,11 +67,11 @@ export default function EditFormModal({ id, onUpdate }) {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       const fetchData = {
-        name: values.name,
-        type: values.type,
-        var_name: values.varName,
-        view: values.view,
-        description: values.description,
+        name: values.name || null,
+        type: values.type["currentKey"] || null,
+        var_name: values.varName || null,
+        view: values.view["currentKey"] || null,
+        description: values.description || null,
       };
 
       try {
@@ -122,7 +156,7 @@ export default function EditFormModal({ id, onUpdate }) {
             )}
           </div>
           <div className="col-span-1">
-            <Select
+            {/* <Select
               labelPlacement={"outside"}
               label="Dataset Type *"
               errorMessage={formik.errors.type}
@@ -132,13 +166,28 @@ export default function EditFormModal({ id, onUpdate }) {
               value={formik.values.type}
               onChange={(value) => formik.setFieldValue("type", value)}
             >
-              <SelectItem value={"max_temp"}>Max Temprature</SelectItem>
-              <SelectItem value={"min_temp"}>Min Temprature</SelectItem>
-              <SelectItem value={"min_max_temp"}>
+              <SelectItem textValue={"max_temp"}>Max Temprature</SelectItem>
+              <SelectItem textValue={"min_temp"}>Min Temprature</SelectItem>
+              <SelectItem textValue={"min_max_temp"}>
                 Min & Max Temprature
               </SelectItem>
-              <SelectItem value={"mean_temp"}>Mean Temprature</SelectItem>
-              <SelectItem value={"pr"}>Percitipation</SelectItem>
+              <SelectItem textValue={"mean_temp"}>Mean Temprature</SelectItem>
+              <SelectItem textValue={"pr"}>Percitipation</SelectItem>
+            </Select> */}
+            <Select
+              labelPlacement={"outside"}
+              label="Dataset Type *"
+              errorMessage={formik.errors.type}
+              placeholder="Select dataset type..."
+              className="w-full"
+              selectedKeys={formik.values.type}
+              onSelectionChange={(value) => formik.setFieldValue("type", value)}
+            >
+              {datasetTypes.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
             </Select>
             {formik.errors.type && formik.touched.type && (
               <div className="text-red-500">{formik.errors.type}</div>
@@ -160,16 +209,18 @@ export default function EditFormModal({ id, onUpdate }) {
           </div>
           <Select
             labelPlacement={"outside"}
-            label="View "
+            label="Dataset view *"
             errorMessage={formik.errors.view}
-            placeholder="Select view..."
+            placeholder="Select dataset view..."
             className="w-full"
-            name="view"
-            value={formik.values.view}
-            onChange={(value) => formik.setFieldValue("view", value)}
+            selectedKeys={formik.values.view}
+            onSelectionChange={(value) => formik.setFieldValue("view", value)}
           >
-            <SelectItem value={"1"}>Global</SelectItem>
-            <SelectItem value={"0"}>Only Me</SelectItem>
+            {datasetViews.map((view) => (
+              <SelectItem key={view.value} value={view.value}>
+                {view.label}
+              </SelectItem>
+            ))}
           </Select>
           {formik.errors.view && formik.touched.view && (
             <div className="text-red-500">{formik.errors.view}</div>

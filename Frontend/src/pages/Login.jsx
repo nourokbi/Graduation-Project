@@ -9,9 +9,9 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { doSignInWithEmailAndPassword } from "../firebase/auth";
 
 const validationSchema = Yup.object({
-  email: Yup.string().email("Invalid email address").required("Required"),
+  email: Yup.string().email("Invalid email address").required("Please enter your email"),
   password: Yup.string()
-    .required("Required")
+    .required("Please enter your password")
     .min(8, "Password should be 8 chars minimum."),
 });
 

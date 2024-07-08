@@ -8,12 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Name Required"),
-  email: Yup.string().email("Invalid email address").required("Required"),
+  name: Yup.string().required("Please enter your name"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Please enter your email"),
   password: Yup.string()
-    .required("Required")
+    .required("Please enter a password")
     .min(8, "Password should be 8 chars minimum."),
-  confirmPassword: Yup.string().required("Please enter confirm password"),
+  confirmPassword: Yup.string().required("Please confirm your password"),
 });
 
 export default function Register() {

@@ -86,7 +86,7 @@ export default function Datasets() {
           <p>here you can upload, edit or delete your datasets</p>
         </div>
         <div className="upload-form">
-          <UploadFormModal />
+          <UploadFormModal onUpload={() => fetchAllUserDatasets()} />
         </div>
       </div>
       {loading ? (

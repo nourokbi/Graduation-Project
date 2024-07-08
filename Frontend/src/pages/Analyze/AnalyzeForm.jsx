@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { ErrorMessage, Field, Formik, useFormik, Form } from "formik";
@@ -81,9 +82,9 @@ export default function AnalyzeForm({
 }) {
   const { datasets, sectors } = useAnalyze();
   const [selectedDataset, setSelectedDataset] = useState("");
-  const [selectedDatasetAccess, setSelectedDatasetAccess] = useState("");
   const [selectedSector, setSelectedSector] = useState("");
   const [availableIndexes, setAvailableIndexes] = useState([]);
+  const [indexLoading, setIndexLoading] = useState(false);
 
   const getDatasetAccess = (datasetId) => {
     const dataset = datasets.find((dataset) => dataset.id === datasetId);
@@ -92,15 +93,14 @@ export default function AnalyzeForm({
 
   useEffect(() => {
     const fetchAvailableIndexes = async () => {
+      setIndexLoading(true);
       const body = {
         dataset_id: selectedDataset,
         sector_name: selectedSector,
         access: getDatasetAccess(selectedDataset),
       };
-      console.log(body);
       // Fetch available indexes
       try {
-        console.log(body);
         const response = await fetch(
           "http://localhost:5000/intersect_indexes",
           {
@@ -119,16 +119,16 @@ export default function AnalyzeForm({
           );
         }
         const data = await response.json();
-        console.log(data);
-        setAvailableIndexes((prevIndexes) => [...data]);
+        setAvailableIndexes(data);
       } catch (error) {
         console.error("Error fetching available indexes: ", error);
       }
+      setIndexLoading(false);
     };
     if (selectedDataset && selectedSector) {
       fetchAvailableIndexes();
     }
-  }, [selectedDataset, selectedSector, selectedDatasetAccess]);
+  }, [selectedDataset, selectedSector]);
 
   const getGovernrateData = (governrate) => {};
   return (
@@ -147,6 +147,8 @@ export default function AnalyzeForm({
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
+          values.access = getDatasetAccess(values.dataset);
+          console.log("values: ", values);
           setIsLoading(true); // Set loading state to true (Show loading spinner
           setAnalyzeData((prevData) => {
             const newData = { ...prevData, ...values };
@@ -216,7 +218,6 @@ export default function AnalyzeForm({
                     handleChange(e);
                     const sector = e.target.value;
                     setSelectedSector(sector);
-                    console.log("selectedSector: ", selectedSector);
                     setFieldValue("index", ""); // Reset index field
                   }}
                 >
@@ -242,8 +243,9 @@ export default function AnalyzeForm({
                 </div>
                 <Field name="index" placeholder="Select index..." as="select">
                   <option value="" default>
-                    {/* asd */}
-                    {selectedSector && selectedDataset
+                    {indexLoading
+                      ? "Loading Indices..."
+                      : selectedSector && selectedDataset
                       ? availableIndexes.length > 0
                         ? "Select index..."
                         : "No available indexes for this sector"

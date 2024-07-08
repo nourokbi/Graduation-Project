@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 import { createContext, useContext, useEffect, useState } from "react";
@@ -12,12 +13,9 @@ export function useAnalyze() {
 export function AnalyzeProvider({ children }) {
   const ALL_DATASETS_URL = `http://localhost:5000/retrieve_all_datasets`;
   const ADMIN_DATASETS_URL = `http://localhost:5000/retrieve_all_datasets/admin`;
-
   const { userData, loading } = useAuth();
   const [datasets, setDatasets] = useState([]);
   const [sectors, setSectorData] = useState(null);
-  const [availableIndexes, setAvailableIndexes] = useState([]);
-  const [codedIndexes, setCodedIndexes] = useState([]);
 
   const fetchDatasets = async () => {
     // fetch datasets from database
@@ -57,57 +55,6 @@ export function AnalyzeProvider({ children }) {
     }
   };
 
-  const fetchCodedIndexes = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/available_indexes`, {
-        method: "GET",
-      });
-
-      const data = await response.json();
-      setCodedIndexes(data);
-    } catch (error) {
-      console.error("Error fetching indexes: ", error);
-    }
-  };
-
-  // const extractSectorNames = (sectors) => {
-  //   return Object.values(sectors).map((sector) => sector.sector_name);
-  // };
-
-  // Function to find intersecting indexes
-  // const findIntersectingIndexes = (datasets, sectors, availableIndexes) => {
-  //   const datasetIndexes = datasets?.flatMap(
-  //     (dataset) => dataset.available_indexes
-  //   );
-
-  //   // Initialize an object to store intersecting indexes for each sector
-  //   const intersectingIndexes = {};
-
-  //   // Iterate over each sector
-  //   for (const sectorKey of Object.keys(sectors)) {
-  //     const sector = sectors[sectorKey];
-  //     intersectingIndexes[sectorKey] = {};
-
-  //     // Iterate over each index in the sector
-  //     for (const indexKey of Object.keys(sector.indexes)) {
-  //       const index = sector.indexes[indexKey];
-
-  //       // Check if the index code is in both the dataset indexes and available indexes
-  //       if (
-  //         availableIndexes.includes(index.index_code) &&
-  //         datasetIndexes.includes(index.index_code)
-  //       ) {
-  //         intersectingIndexes[sectorKey] = {
-  //           index_code: index.index_code,
-  //           index_name: index.index_name,
-  //         };
-  //       }
-  //     }
-  //   }
-
-  //   return intersectingIndexes;
-  // };
-
   const fetchSectors = async () => {
     try {
       const response = await fetch(`http://localhost:5000/sectors`, {
@@ -118,7 +65,6 @@ export function AnalyzeProvider({ children }) {
     } catch (error) {
       console.error("Error fetching sectors: ", error);
     }
-    console.log("sectors: ", sectors);
   };
 
   useEffect(() => {

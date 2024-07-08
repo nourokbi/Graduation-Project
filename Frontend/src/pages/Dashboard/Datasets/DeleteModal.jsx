@@ -2,10 +2,12 @@
 import { useDisclosure } from "@nextui-org/react";
 import OutputModal from "../../../components/Modals/OutputModal";
 import { Trash2 } from "lucide-react";
+import { useAuth } from "../../../contexts/authContext";
 
 export default function DeleteModal({ id, onDelete }) {
   const { onOpen, isOpen, onClose, onOpenChange } = useDisclosure();
-  const DELETE_URL = `http://127.0.0.1:5000/delete_dataset/${id}`;
+  const { userData } = useAuth();
+  const DELETE_URL = `http://127.0.0.1:5000/delete_dataset/${userData.access}/${id}`;
 
   const buttonText = (
     <>
@@ -15,13 +17,13 @@ export default function DeleteModal({ id, onDelete }) {
 
   const handleDelete = async () => {
     try {
-      // const response = await fetch(DELETE_URL, {
-      //   method: "DELETE",
-      // });
+      const response = await fetch(DELETE_URL, {
+        method: "DELETE",
+      });
 
-      // if (!response.ok) {
-      //   throw new Error("Network response was not ok");
-      // }
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
       onDelete(id);
       console.log("Deleted");

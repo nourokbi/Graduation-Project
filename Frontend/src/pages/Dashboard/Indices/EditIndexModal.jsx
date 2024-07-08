@@ -41,7 +41,6 @@ export default function EditIndexModal({ id, onEdit, sector }) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log("Form values:", values);
       // Submit form data here
       try {
         const response = fetch(EDIT_URL, {
@@ -51,7 +50,6 @@ export default function EditIndexModal({ id, onEdit, sector }) {
           },
           body: JSON.stringify(values),
         });
-        console.log(response);
 
         if (!response.ok) {
           throw new Error(
@@ -59,13 +57,11 @@ export default function EditIndexModal({ id, onEdit, sector }) {
             response.status
           );
         }
-        const data = response.json();
-        console.log(data);
-        onEdit();
-        onClose();
       } catch (error) {
         console.error("There was a problem updating the index:", error);
       }
+      onEdit();
+      onClose();
     },
   });
 

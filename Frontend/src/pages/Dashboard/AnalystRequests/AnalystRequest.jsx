@@ -17,23 +17,19 @@ export default function AnalystRequest() {
       <ApproveAnalyst
         className="approve"
         {...props}
-        handleApprove={handleApprove}
+        handleApprove={handleChange}
       />
     ),
     (props) => (
       <RejectAnalyst
         className="reject"
         {...props}
-        handleReject={handleReject}
+        handleReject={handleChange}
       />
     ),
   ];
 
-  const handleApprove = () => {
-    fetchPendingUsers();
-  };
-
-  const handleReject = () => {
+  const handleChange = () => {
     fetchPendingUsers();
   };
 
@@ -84,7 +80,6 @@ export default function AnalystRequest() {
     <div className="analyst-request">
       <h1>Analyst Requests</h1>
       <p>Approve or reject analyst requests from users</p>
-
       {loading ? (
         <div className="loading">Loading...</div>
       ) : (

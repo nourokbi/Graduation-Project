@@ -9,10 +9,13 @@ import LayeredMap from "./LayeredMap";
 
 export default function Analyze() {
   const [analyzeData, setAnalyzeData] = useState({});
-  const [showOutput, setShowOutput] = useState(false);
+  const [showOutput, setShowOutput] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [imageBase64, setImageBase64] = useState("");
+  const [geoJson, setGeoJson] = useState({});
+  const [outputText, setOutputText] = useState("");
+  const ANALYZE_URL = ``;
 
   const buttonText = (
     <>
@@ -20,8 +23,9 @@ export default function Analyze() {
     </>
   );
 
-  const fetchData = (data) => {
+  const fetchData = async (data) => {
     setShowOutput(false);
+    setIsLoading(true);
     const startDate = new Date(data.timeZone.start);
     const endDate = new Date(data.timeZone.end);
 
@@ -30,58 +34,55 @@ export default function Analyze() {
     const endYear = endDate.getFullYear();
 
     const requestBody = {
-      file_path:
-        "E:/NourOkbi/College/Graduation Project/Data/indices files/max_pr_monthly_RCP45.nc",
-      var_name: "pr",
+      dataset_id: data.dataset,
+      var_name: data.type,
       start_year: startYear,
       end_year: endYear,
       season: "annual",
       index_name: data.index,
-      data_type: "temp",
+      data_type: data.type,
+      access: data.access,
+      governrate: data.governrate,
+      sector: data.sector,
     };
-
-    if (data.rectangleBounds && data.rectangleBounds.length === 2) {
-      requestBody.lon1 = data.rectangleBounds[0][1];
-      requestBody.lat1 = data.rectangleBounds[0][0];
-      requestBody.lon3 = data.rectangleBounds[1][1];
-      requestBody.lat3 = data.rectangleBounds[1][0];
-    }
-
     console.log("requestBody: ", requestBody);
-
-    fetch("http://127.0.0.1:5000/plot_local", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error Fetching Data! ", response.statusCode);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setImageBase64(data.image);
-        setShowOutput(true);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setIsLoading(false); // Set loading state to false in case of an error
+    try {
+      const response = await fetch(ANALYZE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       });
+
+      if (!response.ok) {
+        throw new Error("Error Analyzing Inputs! ", response.statusCode);
+      }
+
+      const data = await response.json();
+      setImageBase64(data.image);
+      setGeoJson(data.geojson);
+      setOutputText(data.text);
+      setShowOutput(true);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    if (
-      analyzeData?.timeZone?.start &&
-      analyzeData?.timeZone?.end &&
-      analyzeData.index
-    ) {
-      fetchData(analyzeData);
-      setIsLoading(false);
-    }
+    // if (
+    //   analyzeData?.timeZone?.start &&
+    //   analyzeData?.timeZone?.end &&
+    //   analyzeData.index &&
+    //   analyzeData.dataset &&
+    //   analyzeData.type &&
+    //   analyzeData.access &&
+    //   analyzeData.governrate &&
+    //   analyzeData.sector
+    // ) {
+    //   fetchData(analyzeData);
+    // }
     // console.log("analyzeData: ", analyzeData);
   }, [analyzeData]);
 
@@ -114,7 +115,7 @@ export default function Analyze() {
               isOpen={isOpen}
               onOpen={onOpen}
               onOpenChange={onOpenChange}
-              size="xl"
+              size="2xl"
             >
               <img
                 src={"data:image/jpeg;base64," + imageBase64}
