@@ -6,34 +6,34 @@ import EditIndexModal from "./EditIndexModal";
 
 export default function Indices() {
   const SECTOR_URL = "http://127.0.0.1:5000/sectors";
-  const [sectorIndices, setSectorIndices] = useState([]);
   const [sectorNames, setSectorNames] = useState([]);
+  const [sectorIndices, setSectorIndices] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const header = ["Index", "Index Name", "Moderate Range", "Actions"];
-  const onEdit = async () => {
-    await fetchData();
+  const indicesHeader = ["Index", "Index Name", "Moderate Range", "Actions"];
+  const onEditIndex = async () => {
+    await fetchSectors();
   };
 
-  const fetchData = async () => {
+  const fetchSectors = async () => {
     setLoading(true);
-    // Fetch data here
     try {
       const response = await fetch(SECTOR_URL, { method: "GET" });
 
       if (!response.ok) {
-        throw new Error("Error Fetching Data with code: ", response.status);
+        throw new Error("Error Fetching Sectors with code: ", response.status);
       }
       const sectors = await response.json();
+      // Converts response to array of sector names and indices
       setSectorNames(extractSectorNames(sectors));
       setSectorIndices(extractSectorIndices(sectors));
-      setLoading(false);
     } catch (error) {
       console.error("There was a problem fetching data:", error);
     }
+    setLoading(false);
   };
   useEffect(() => {
-    fetchData();
+    fetchSectors();
   }, []);
 
   const extractSectorNames = (sectors) => {
@@ -71,12 +71,12 @@ export default function Indices() {
                     (props) => (
                       <EditIndexModal
                         {...props}
-                        onEdit={onEdit}
+                        onEdit={onEditIndex}
                         sector={sector}
                       />
                     ),
                   ]}
-                  header={header}
+                  header={indicesHeader}
                 />
               ) : (
                 <div>No indices for this sector</div>

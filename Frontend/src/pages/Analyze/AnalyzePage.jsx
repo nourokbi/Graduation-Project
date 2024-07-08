@@ -104,8 +104,8 @@ export default function Analyze() {
             isLoading={isLoading}
             setIsLoading={setIsLoading}
           />
-          <LayeredMap />
-          {/* <AnalyzeMap setAnalyzeData={setAnalyzeData} /> */}
+          {/* <LayeredMap /> */}
+          <AnalyzeMap setAnalyzeData={setAnalyzeData} />
           {showOutput && (
             <OutputModal
               buttonText={buttonText}

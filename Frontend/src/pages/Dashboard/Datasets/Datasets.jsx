@@ -12,13 +12,13 @@ export default function Datasets() {
   const [datasets, setDatasets] = useState([]);
   const [datasetsIDs, setDatasetsIDs] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const URL_BASE = `http://127.0.0.1:5000/retrieve_all_datasets/analyst123`;
-  const URL_BASE = useMemo(
+  // const ALL_DATASETS_URL = `http://127.0.0.1:5000/retrieve_all_datasets/analyst123`;
+  const ALL_DATASETS_URL = useMemo(
     () => `http://127.0.0.1:5000/retrieve_all_datasets/${userData.access}`,
     [userData.access]
   );
 
-  const handleDelete = (id) => {
+  const handleDeleteDataset = (id) => {
     console.log("id", id);
     setDatasets((prev) =>
       prev.filter((dataset, index) => datasetsIDs[index] !== id)
@@ -26,18 +26,18 @@ export default function Datasets() {
     setDatasetsIDs((prev) => prev.filter((datasetId) => datasetId !== id));
   };
 
-  const handleUpdate = async () => {
-    await fetchData();
+  const handleUpdateDataset = async () => {
+    await fetchAllUserDatasets();
   };
 
-  const header = ["Dataset Name", "Type", "Author", "Actions"];
+  const datasetTableHeader = ["Dataset Name", "Type", "Author", "Actions"];
 
-  const actions = [
-    (props) => <EditFormModal {...props} onUpdate={handleUpdate} />,
-    (props) => <DeleteModal {...props} onDelete={handleDelete} />,
+  const datasetActions = [
+    (props) => <EditFormModal {...props} onUpdate={handleUpdateDataset} />,
+    (props) => <DeleteModal {...props} onDelete={handleDeleteDataset} />,
   ];
 
-  const destructuringData = (data) => {
+  const destructuringDatasetData = (data) => {
     return data.map((dataset) => {
       return [
         dataset.name,
@@ -47,37 +47,36 @@ export default function Datasets() {
     });
   };
 
-  const destructuringIDs = (data) => {
+  const destructuringDatasetsIDs = (data) => {
     return data.map((dataset) => {
       return dataset.id;
     });
   };
 
-  const fetchData = async () => {
+  const fetchAllUserDatasets = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE, {
+      const response = await fetch(ALL_DATASETS_URL, {
         method: "GET",
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Error Fetching Datasets with code: ", response.status);
       }
 
       const result = await response.json();
-      console.log("result", result);
-      setDatasets(destructuringData(result));
-      setDatasetsIDs(destructuringIDs(result));
-      // Handle the response data as needed
-      setLoading(false);
+      // Convert datasets into data that can be displayed in the table and ids for each row
+      setDatasets(destructuringDatasetData(result));
+      setDatasetsIDs(destructuringDatasetsIDs(result));
     } catch (error) {
       console.error("There was a problem retrieving datasets:", error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchData();
-  }, [URL_BASE]);
+    fetchAllUserDatasets();
+  }, [ALL_DATASETS_URL]);
 
   return (
     <div className="dataset-container">
@@ -92,13 +91,17 @@ export default function Datasets() {
       </div>
       {loading ? (
         <div className="loading">Loading...</div>
-      ) : (
+      ) : datasets.length > 0 ? (
         <Table
           data={datasets}
           ids={datasetsIDs}
-          actions={actions}
-          header={header}
+          actions={datasetActions}
+          header={datasetTableHeader}
         />
+      ) : (
+        <div className="no-data">
+          No datasets available for you, <br /> Try upload dataset
+        </div>
       )}
     </div>
   );

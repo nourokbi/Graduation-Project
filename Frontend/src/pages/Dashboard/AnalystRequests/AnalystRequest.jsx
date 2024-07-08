@@ -6,6 +6,7 @@ import RejectAnalyst from "./RejectAnalyst";
 
 export default function AnalystRequest() {
   const [pendingUsers, setPendingUsers] = useState([]);
+  const [pendingUsersIDs, setPendingUsersIDs] = useState([]); // [1, 2, 3, 4, 5]
   const [loading, setLoading] = useState(false);
   const ALL_USERS_URL = "http://127.0.0.1:5000/get_all_users";
 
@@ -36,8 +37,17 @@ export default function AnalystRequest() {
     fetchPendingUsers();
   };
 
-  const extractPendingUsers = (users) => {
-    return Object.values(users).filter((user) => user.access === "waiting");
+  const extractPendingUsersAndIDs = (users) => {
+    const ids = [];
+    const waitingUsers = [];
+    for (const [id, user] of Object.entries(users)) {
+      if (user.access === "waiting") {
+        ids.push(id);
+        waitingUsers.push(user);
+      }
+    }
+
+    return [ids, waitingUsers];
   };
 
   const extractUsersData = (users) => {
@@ -45,9 +55,7 @@ export default function AnalystRequest() {
       return [user.name, user.email];
     });
   };
-  const extractUsersIDs = (users) => {
-    return users.map((user) => user.email);
-  };
+
   const fetchPendingUsers = async () => {
     setLoading(true);
     try {
@@ -60,7 +68,9 @@ export default function AnalystRequest() {
       }
 
       const data = await response.json();
-      setPendingUsers(extractPendingUsers(data));
+      const [ids, users] = extractPendingUsersAndIDs(data);
+      setPendingUsers(users);
+      setPendingUsersIDs(ids);
     } catch (error) {
       console.error("There was a problem fetching the users:", error);
     }
@@ -80,7 +90,7 @@ export default function AnalystRequest() {
       ) : (
         <Table
           data={extractUsersData(pendingUsers)}
-          ids={extractUsersIDs(pendingUsers)}
+          ids={pendingUsersIDs}
           header={requestHeader}
           actions={actions}
         />

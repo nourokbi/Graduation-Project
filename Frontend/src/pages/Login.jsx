@@ -17,7 +17,7 @@ const validationSchema = Yup.object({
 
 export default function Login() {
   const navigate = useNavigate();
-  const { isLoggedIn, error, setErrorHandler, userData } = useAuth();
+  const { isLoggedIn, error, setErrorHandler } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isSigningIn, setIsSigningIn] = useState(false);
 

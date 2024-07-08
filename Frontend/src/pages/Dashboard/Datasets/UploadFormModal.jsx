@@ -28,8 +28,7 @@ export default function UploadFormModal() {
     file: Yup.mixed()
       .required("Required")
       .test("fileFormat", "Unsupported Format", (value) => {
-        console.log("File value:", value);
-        return value && value.endsWith(".nc");
+        return value && value.name.endsWith(".nc");
       }),
   });
 
@@ -44,34 +43,31 @@ export default function UploadFormModal() {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      const fetchData = {
-        path_local: values.file,
-        name: values.name,
-        type: "min_temp",
-        var_name: "min_temp",
-        access: "admin",
-        view: "onlyme",
-        description: "sdwadswasd",
-      };
-      console.log("fetchData:", fetchData);
+      const formData = new FormData();
+      formData.append("file", values.file);
+      formData.append("name", values.name);
+      formData.append("type", values.type);
+      formData.append("var_name", values.variableName);
+      formData.append("view", values.view);
+      formData.append("description", values.description);
+      formData.append("access", userData.access);
 
       try {
         const response = await fetch(URL_BASE, {
           headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "multipart/form-data",
             // Authorization: `Bearer ${userData.access}`,
           },
           method: "POST",
-          body: JSON.stringify(fetchData),
+          body: formData,
         });
 
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Failed to upload Dataset");
         }
 
         const result = await response.json();
         console.log(result);
-        // Handle the response data as needed
       } catch (error) {
         console.error("There was a problem uploading dataset:", error);
       }
@@ -84,10 +80,12 @@ export default function UploadFormModal() {
     </>
   );
 
+  const handleFileChange = (e) => {
+    formik.setFieldValue("file", e.target.files[0]);
+  };
+
   return (
     <FormModal
-      //! Edit Form fields => Dataset name, type, varName, description
-      //! Delete Form fields => Delete
       onOpen={onOpen}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
@@ -216,8 +214,7 @@ export default function UploadFormModal() {
                     type="file"
                     accept=".nc"
                     className="sr-only"
-                    value={formik.values.file}
-                    onChange={formik.handleChange}
+                    onChange={handleFileChange}
                   />
                   {formik.errors.file && (
                     <div className="text-red-500"> {formik.errors.file}</div>

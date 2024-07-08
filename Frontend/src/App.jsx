@@ -14,31 +14,37 @@ import Register from "./pages/Register";
 import AnalystRequest from "./pages/Dashboard/AnalystRequests/AnalystRequest";
 import { AuthProvider } from "./contexts/authContext";
 import AdminAuthRequired from "./components/auth/AdminAuthRequired";
+import { AnalyzeProvider } from "./contexts/analyzeContext";
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="analyze" element={<Analyze />} />
-            <Route path="about" element={<About />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route element={<AuthRequired />}>
-              <Route path="dashboard" element={<DashboardLayout />}>
-                <Route index element={<Datasets />} />
-                <Route element={<AdminAuthRequired />}>
-                  <Route path="indices" element={<Indices />} />
-                  <Route path="analyst-requests" element={<AnalystRequest />} />
+      <AnalyzeProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="analyze" element={<Analyze />} />
+              <Route path="about" element={<About />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route element={<AuthRequired />}>
+                <Route path="dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Datasets />} />
+                  <Route element={<AdminAuthRequired />}>
+                    <Route path="indices" element={<Indices />} />
+                    <Route
+                      path="analyst-requests"
+                      element={<AnalystRequest />}
+                    />
+                  </Route>
                 </Route>
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </AnalyzeProvider>
     </AuthProvider>
   );
 }

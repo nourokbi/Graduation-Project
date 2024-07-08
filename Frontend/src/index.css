@@ -119,8 +119,9 @@ button:disabled {
   background-size: cover;
   z-index: -5;
 }
-.loading {
-  font-size: 3rem;
+.loading,
+.no-data {
+  font-size: 2rem;
   font-weight: 1000;
   text-align: center;
   margin-block: 20px;
@@ -780,7 +781,7 @@ header .nav-login:hover {
   font-weight: 600;
   font-size: 1rem;
   gap: 3px;
-  color: rgb(230, 230, 230)
+  color: rgb(230, 230, 230);
 }
 .indices .sector-table section button:hover {
   background-color: var(--hover-color);

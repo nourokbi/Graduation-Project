@@ -3,44 +3,38 @@
 import { ErrorMessage, Field, Formik, useFormik, Form } from "formik";
 import { Puff } from "react-loader-spinner";
 import * as Yup from "yup";
+import { useAnalyze } from "../../contexts/analyzeContext";
+import { useEffect, useState } from "react";
+import { set } from "firebase/database";
 
 const governrates = [
   "Alexandria",
   "Aswan",
-  "Asyut",
-  "Beheira",
+  "Assiut",
+  "Behera",
   "Beni Suef",
   "Cairo",
   "Dakahlia",
   "Damietta",
-  "Faiyum",
+  "Fayoum",
   "Gharbia",
   "Giza",
   "Ismailia",
-  "Kafr El Sheikh",
+  "Kafr El-Shikh",
+  "Kalyoubia",
   "Luxor",
-  "Matruh",
-  "Minya",
-  "Monufia",
+  "Matrouh",
+  "Menia",
+  "Menoufia",
   "New Valley",
   "North Sinai",
   "Port Said",
-  "Qalyubia",
   "Qena",
   "Red Sea",
-  "Sharqia",
-  "Sohag",
+  "Sharkia",
+  "Suhag",
   "South Sinai",
   "Suez",
-];
-
-const sectors = [
-  "General",
-  "Agriculture",
-  "Health",
-  "Energy",
-  "Water",
-  "Bio-diversity",
 ];
 
 const validationSchema = Yup.object({
@@ -85,12 +79,64 @@ export default function AnalyzeForm({
   isLoading,
   setIsLoading,
 }) {
+  const { datasets, sectors } = useAnalyze();
+  const [selectedDataset, setSelectedDataset] = useState("");
+  const [selectedDatasetAccess, setSelectedDatasetAccess] = useState("");
+  const [selectedSector, setSelectedSector] = useState("");
+  const [availableIndexes, setAvailableIndexes] = useState([]);
+
+  const getDatasetAccess = (datasetId) => {
+    const dataset = datasets.find((dataset) => dataset.id === datasetId);
+    return dataset?.access;
+  };
+
+  useEffect(() => {
+    const fetchAvailableIndexes = async () => {
+      const body = {
+        dataset_id: selectedDataset,
+        sector_name: selectedSector,
+        access: getDatasetAccess(selectedDataset),
+      };
+      console.log(body);
+      // Fetch available indexes
+      try {
+        console.log(body);
+        const response = await fetch(
+          "http://localhost:5000/intersect_indexes",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // Ensure this header is set
+            },
+            body: JSON.stringify(body),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Error fetching available indexes: ",
+            response.status
+          );
+        }
+        const data = await response.json();
+        console.log(data);
+        setAvailableIndexes((prevIndexes) => [...data]);
+      } catch (error) {
+        console.error("Error fetching available indexes: ", error);
+      }
+    };
+    if (selectedDataset && selectedSector) {
+      fetchAvailableIndexes();
+    }
+  }, [selectedDataset, selectedSector, selectedDatasetAccess]);
+
   const getGovernrateData = (governrate) => {};
   return (
     <div className="analyze-form">
       <Formik
         initialValues={{
           dataset: "",
+          access: "",
           governrate: "",
           index: "",
           sector: "",
@@ -109,7 +155,7 @@ export default function AnalyzeForm({
           });
         }}
       >
-        {({ handleSubmit, handleChange }) => (
+        {({ handleSubmit, handleChange, setFieldValue }) => (
           <Form onSubmit={handleSubmit}>
             <div className="column">
               <div className="column-item">
@@ -118,17 +164,19 @@ export default function AnalyzeForm({
                   name="dataset"
                   placeholder="Select dataset..."
                   as="select"
+                  onChange={(e) => {
+                    handleChange(e);
+                    setSelectedDataset(e.target.value);
+                  }}
                 >
-                  {" "}
-                  {
-                    //! This data should be fetched from the backend
-                  }
                   <option value="" default>
                     Select dataset...
                   </option>
-                  <option value="dataset1">dataset1</option>
-                  <option value="dataset2">dataset2</option>
-                  <option value="dataset3">dataset3</option>
+                  {datasets?.map((dataset, index) => (
+                    <option key={index} value={dataset.id}>
+                      {dataset.name}
+                    </option>
+                  ))}
                 </Field>
                 <ErrorMessage name="dataset" component="div" />
               </div>
@@ -160,48 +208,58 @@ export default function AnalyzeForm({
             <div className="column">
               <div className="column-item">
                 <label htmlFor="sector">Sector</label>
-                <Field name="sector" placeholder="Select sector..." as="select">
+                <Field
+                  name="sector"
+                  placeholder="Select sector..."
+                  as="select"
+                  onChange={(e) => {
+                    handleChange(e);
+                    const sector = e.target.value;
+                    setSelectedSector(sector);
+                    console.log("selectedSector: ", selectedSector);
+                    setFieldValue("index", ""); // Reset index field
+                  }}
+                >
                   <option value="" default>
                     Select sector...
                   </option>
-                  {sectors.map((sector) => (
-                    <option key={sector} value={sector}>
-                      {sector}
-                    </option>
-                  ))}
+                  {sectors && Object.entries(sectors).length > 0 ? (
+                    Object.entries(sectors).map(([key, sector]) => (
+                      <option key={key} value={key}>
+                        {sector.sector_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>No sectors available</option>
+                  )}
                 </Field>
                 <ErrorMessage name="sector" component="div" />
               </div>
               <div className="column-item">
                 <div className="label-row">
                   <label htmlFor="index">Index</label>
-                  {
-                    //! Link this anchor to the indices page, Add a tooltip here,}
-                  }
                   <a href="/about#indices">!</a>
                 </div>
-                {
-                  //! This data should be fetched from the backend
-                }
                 <Field name="index" placeholder="Select index..." as="select">
                   <option value="" default>
-                    Select index...
+                    {/* asd */}
+                    {selectedSector && selectedDataset
+                      ? availableIndexes.length > 0
+                        ? "Select index..."
+                        : "No available indexes for this sector"
+                      : "Please select sector and dataset first"}
                   </option>
-                  <option value="FD">Frost Days</option>
-                  <option value="SU">Summer Days</option>
-                  <option value="ID">ID</option>
-                  <option value="TR">TNx</option>
-                  <option value="TXx">TXx</option>
-                  <option value="TNx">TNx</option>
-                  <option value="TXn">TXn</option>
-                  <option value="TNn">TNn</option>
-                  <option value="GSL">GSL</option>
-                  <option value="HDD">HDD</option>
-                  <option value="CDD">CDD</option>
-                  <option value="TX90p">TX90p</option>
-                  <option value="TN90p">TN90p</option>
-                  <option value="TX10p">TX10p</option>
-                  <option value="TN10p">TN10p</option>
+                  {availableIndexes ? (
+                    availableIndexes?.map((index, idx) => (
+                      <option key={idx} value={index.index_code}>
+                        {index.index_name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>
+                      There no available indexes, try another inputs
+                    </option>
+                  )}
                 </Field>
                 <ErrorMessage name="index" component="div" />
               </div>

@@ -22,36 +22,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
-  // const fetchData = async (data) => {
-  //   const requestBody = {
-  //     name: data.name,
-  //     email: data.email,
-  //     access: "analyst",
-  //   };
-  //   fetch("http://localhost:5000/add_new_user", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(requestBody),
-  //   })
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error(
-  //           "Error Creating Analyst Request! ",
-  //           response.statusCode
-  //         );
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       return data;
-  //     });
-  // };
-
   const onSubmit = async (values, { setSubmitting, resetForm }) => {
-    // const data = fetchData(values);
-    // console.log('data: ', data);
     if (!isRegistering) {
       setIsRegistering(true);
       await doCreateUserWithEmailAndPassword(
