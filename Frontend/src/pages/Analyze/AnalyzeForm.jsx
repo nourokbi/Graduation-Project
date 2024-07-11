@@ -6,7 +6,6 @@ import { Puff } from "react-loader-spinner";
 import * as Yup from "yup";
 import { useAnalyze } from "../../contexts/analyzeContext";
 import { useEffect, useState } from "react";
-import { set } from "firebase/database";
 
 const governrates = [
   "Alexandria",
@@ -74,12 +73,7 @@ const validationSchema = Yup.object({
   }),
 });
 
-export default function AnalyzeForm({
-  setAnalyzeData,
-  fetchData,
-  isLoading,
-  setIsLoading,
-}) {
+export default function AnalyzeForm({ fetchData, isLoading, setIsLoading }) {
   const { datasets, sectors } = useAnalyze();
   const [selectedDataset, setSelectedDataset] = useState("");
   const [selectedSector, setSelectedSector] = useState("");
@@ -130,7 +124,6 @@ export default function AnalyzeForm({
     }
   }, [selectedDataset, selectedSector]);
 
-  const getGovernrateData = (governrate) => {};
   return (
     <div className="analyze-form">
       <Formik
@@ -147,14 +140,10 @@ export default function AnalyzeForm({
         }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
+          // setIsLoading(true); // Set loading state to true (Show loading spinner
           values.access = getDatasetAccess(values.dataset);
-          console.log("values: ", values);
-          setIsLoading(true); // Set loading state to true (Show loading spinner
-          setAnalyzeData((prevData) => {
-            const newData = { ...prevData, ...values };
-            fetchData(newData); // Call the fetch function with updated data
-            return newData;
-          });
+          fetchData(values); // Call the fetch function with updated data
+          // setIsLoading(false); // Set loading state to true (Show loading spinner
         }}
       >
         {({ handleSubmit, handleChange, setFieldValue }) => (
@@ -191,7 +180,6 @@ export default function AnalyzeForm({
                   as="select"
                   onChange={(e) => {
                     handleChange(e);
-                    getGovernrateData(e.target.value);
                   }}
                 >
                   <option value="" default>
@@ -297,15 +285,17 @@ export default function AnalyzeForm({
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <Puff
-                      visible={true}
-                      height="30"
-                      width="30"
-                      color="#4fa94d"
-                      ariaLabel="puff-loading"
-                    />
-                  ) : null}
-                  Analyze
+                    <>
+                      <Puff
+                        visible={true}
+                        height="30"
+                        width="30"
+                        color="#4fa94d"
+                        ariaLabel="puff-loading"
+                      />{" "}
+                      Analyzing...
+                    </>
+                  ) : "Analyze"}
                 </button>
               </div>
             </div>

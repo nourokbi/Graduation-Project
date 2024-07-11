@@ -257,12 +257,6 @@ export default function UploadFormModal({ onUpload }) {
                   ) : formik.values.file ? (
                     <div>File Uploaded: {formik.values?.file?.name}</div>
                   ) : null}
-                  {/* {formik.values.file ? (
-                    <span className="pl-2 text-success-500">
-                      <br />
-                      File Uploaded: {formik.values.file.name}
-                    </span>
-                  ) : null} */}
                 </label>
               </div>
             </div>

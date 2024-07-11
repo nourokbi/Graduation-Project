@@ -7,12 +7,7 @@ import Map from "../../components/ui/Map";
 const center = [27.005, 30.23];
 const zoom = 6;
 
-const MapWithResizableRectangle = ({ analyzeData, setAnalyzeData }) => {
-  const [rectangleBounds, setRectangleBounds] = useState();
-
-  useEffect(() => {
-    setAnalyzeData((analyzeData) => ({ ...analyzeData, rectangleBounds }));
-  }, [rectangleBounds]);
+const MapWithResizableRectangle = ({ govGeo, sectorGeo }) => {
 
   return (
     <Map
@@ -21,8 +16,8 @@ const MapWithResizableRectangle = ({ analyzeData, setAnalyzeData }) => {
       style={{ height: "500px" }}
       className={"map"}
       feature={true}
-      rectangleBounds={rectangleBounds}
-      setRectangleBounds={setRectangleBounds}
+      govGeo={govGeo}
+      sectorGeo={sectorGeo}
     />
   );
 };

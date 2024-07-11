@@ -4,7 +4,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  Button,
 } from "@nextui-org/react";
 
 export function Modal({
@@ -27,6 +26,7 @@ export function Modal({
         onOpenChange={onOpenChange}
         size={size}
         placement="center"
+        scrollBehavior="outside"
       >
         <ModalContent>
           <>

@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useEffect } from "react";
-import { FeatureGroup, MapContainer, TileLayer } from "react-leaflet";
-import { EditControl } from "react-leaflet-draw";
+import { FeatureGroup, MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { useEffect, useState } from "react";
 
 window.type = true;
 
@@ -11,69 +10,85 @@ export default function Map({
   className,
   style,
   feature = false,
-  rectangleBounds,
-  setRectangleBounds,
+  govGeo,
+  sectorGeo,
 }) {
   useEffect(() => {
-    const rectangles = document.querySelectorAll(".leaflet-interactive");
-    if (rectangles.length > 1) {
-      for (let i = 0; i < rectangles.length - 1; i++) {
-        rectangles[i].remove();
-      }
-    }
-  }, [rectangleBounds]);
+    // This useEffect will trigger a re-render when geoJsonData or sectorGeo changes
+  }, [govGeo, sectorGeo]);
 
-  const createRectangle = (e) => {
-    const { _northEast, _southWest } = e.layer.getBounds();
-    const bounds = [
-      [_northEast.lat, _northEast.lng],
-      [_southWest.lat, _southWest.lng],
-    ];
-    setRectangleBounds(bounds);
-  };
-  const handleEditRectangle = (e) => {
-    e.layers.eachLayer((layer) => {
-      const { _northEast, _southWest } = layer.getBounds();
-      const bounds = [
-        [_northEast.lat, _northEast.lng],
-        [_southWest.lat, _southWest.lng],
-      ];
-      setRectangleBounds(bounds);
-    });
-  };
-  const handleDeleteRectangle = () => {
-    setRectangleBounds(null);
-  };
   return (
     <MapContainer
       center={center}
       zoom={zoom}
       className={className}
       style={style}
-      // crs={"EPSG:4326"}
     >
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {/* <TileLayer
-        url="https://wi.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-      /> */}
       {feature ? (
         <FeatureGroup>
-          <EditControl
-            position="topright"
-            draw={{
-              rectangle: true,
-              marker: false,
-              polyline: false,
-              circle: false,
-              circlemarker: false,
-              polygon: false,
-            }}
-            onCreated={createRectangle}
-            onEdited={handleEditRectangle}
-            onDeleted={handleDeleteRectangle}
-          />
+          {govGeo && <GeoJSON data={JSON.parse(govGeo)} />}
+          {sectorGeo && (
+            <GeoJSON data={JSON.parse(sectorGeo)} style={{ color: "green" }} />
+          )}
         </FeatureGroup>
       ) : null}
     </MapContainer>
   );
 }
+
+{
+  /* <EditControl
+  position="topright"
+  draw={{
+    rectangle: true,
+    marker: false,
+    polyline: false,
+    circle: false,
+    circlemarker: false,
+    polygon: false,
+  }}
+  onCreated={createRectangle}
+  onEdited={handleEditRectangle}
+  onDeleted={handleDeleteRectangle}
+/> */
+}
+
+// useEffect(() => {
+//   const rectangles = document.querySelectorAll(".leaflet-interactive");
+//   if (rectangles.length > 1) {
+//     for (let i = 0; i < rectangles.length - 1; i++) {
+//       rectangles[i].remove();
+//     }
+//   }
+// }, [rectangleBounds]);
+
+// const createRectangle = (e) => {
+//   const { _northEast, _southWest } = e.layer.getBounds();
+//   const bounds = [
+//     [_northEast.lat, _northEast.lng],
+//     [_southWest.lat, _southWest.lng],
+//   ];
+//   setRectangleBounds(bounds);
+// };
+// const handleEditRectangle = (e) => {
+//   e.layers.eachLayer((layer) => {
+//     const { _northEast, _southWest } = layer.getBounds();
+//     const bounds = [
+//       [_northEast.lat, _northEast.lng],
+//       [_southWest.lat, _southWest.lng],
+//     ];
+//     setRectangleBounds(bounds);
+//   });
+// };
+// const handleDeleteRectangle = () => {
+//   setRectangleBounds(null);
+// };
+
+// const onEachFeature = (feature, layer) => {
+//   // This function is called on each feature.
+//   // You can bind popups or tooltips to the layer here.
+//   if (feature.properties && feature.properties.popupContent) {
+//     layer.bindPopup(feature.properties.popupContent);
+//   }
+// };

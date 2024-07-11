@@ -16,7 +16,6 @@ export default function ApproveAnalyst({ id, handleApprove, className }) {
       if (!response.ok) {
         throw new Error("Failed to fetch user data");
       }
-      console.log(response.json());
       console.log(`User with id ${id} has been approved`);
       handleApprove();
     } catch (error) {

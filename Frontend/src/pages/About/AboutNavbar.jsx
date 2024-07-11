@@ -55,12 +55,12 @@ export default function AboutNavbar() {
         >
           Datasets
         </a>
-        <a
+        {/* <a
           href="#project-team"
           style={activeSection === "project-team" ? activeStyles : null}
         >
           Project Team
-        </a>
+        </a> */}
       </nav>
     </div>
     </div>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { X } from "lucide-react";
 
@@ -11,13 +12,12 @@ export default function RejectAnalyst({ id, handleReject, className }) {
         },
         body: JSON.stringify({ access: "rejected" }),
       });
-      console.log(response.json())
       console.log("Reject", id);
       handleReject();
     } catch (error) {
       console.error(`There was a problem rejecting the user: ${error}`);
     }
-  }
+  };
 
   return (
     <button className={className} onClick={rejectAnalyst}>

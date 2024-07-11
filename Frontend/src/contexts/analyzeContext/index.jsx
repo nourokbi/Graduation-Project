@@ -17,6 +17,13 @@ export function AnalyzeProvider({ children }) {
   const [datasets, setDatasets] = useState([]);
   const [sectors, setSectorData] = useState(null);
 
+  const removeAdminViewOnlyDatasets = (data) => {
+    const newData = data.filter((dataset) => {
+      return !(dataset.access === "admin" && dataset.view === "onlyme");
+    });
+    return newData;
+  };
+
   const fetchDatasets = async () => {
     // fetch datasets from database
     // set datasets
@@ -26,7 +33,9 @@ export function AnalyzeProvider({ children }) {
         try {
           const response = await fetch(ADMIN_DATASETS_URL, { method: "GET" });
           const data = await response.json();
-          setDatasets(data);
+          // console.log("admin datasets", data);
+          // setDatasets(data);
+          setDatasets(removeAdminViewOnlyDatasets(data));
         } catch (error) {
           console.error("Error fetching datasets: ", error);
         }
@@ -47,7 +56,7 @@ export function AnalyzeProvider({ children }) {
             { method: "GET" }
           );
           const data = await response.json();
-          setDatasets(data);
+          setDatasets(removeAdminViewOnlyDatasets(data));
         } catch (error) {
           console.error("Error fetching datasets: ", error);
         }
